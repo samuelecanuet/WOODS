@@ -22,7 +22,9 @@
 #   Simulation Parameters
 #---------------------------------------------------------------
 /Magnetic_Field 4 T
-/Threshoold_PlasticScintillator 100 keV
+/Detector_thickness 10 cm
+/Detector_radius 1. cm
+/Detector_distance 1.05 cm
 
 #---------------------------------------------------------------
 #   Systematic Variables
@@ -33,8 +35,6 @@
 /Catcher_Position_z 0 mm
 /Catcher_Position catcher2 0 deg     position:[source / catcher2 / catcher1] #delta angle(degree)
 /Catcher_Thickness 100 700 0 nm     thickness : Al, Mylar Al (0 delete it)
-
-
 
 #---------------------------------------------------------------
 #   Generate Events

@@ -1,6 +1,6 @@
-# WISArD Geant4 Simulation
+# WOODS Geant4 Simulation
 
-This code is a Geant4 simulation for the WISArD experiment at ISOLDE CERN.
+This code is a Geant4 simulation for the WOODS experiment.
 
 ## Prerequisites
 - **Geant4 11.1.2**
@@ -9,7 +9,7 @@ This code is a Geant4 simulation for the WISArD experiment at ISOLDE CERN.
 - **Environement variables :**
 ```bash
 source $G4INSTALL/share/Geant4/geant4make/geant4make.csh $G4INSTALL/share/Geant4/geant4make/
-setenv PATH ${PATH}:$WhereGitIs/WISArD/bin/Linux-g++
+setenv PATH ${PATH}:$WhereGitIs/WOODS/bin/Linux-g++
 ```
 
 - Only 8B, 8Li, 14O, 20Mg, 24Si, 26S and 32Ar at 30 keV can be use in the simulation because there is a SRIM file for them. But you can generate a file for an other nucleus or energy with SRIM. You have to rename a *RANGE_3D.txt* SRIM file and place it in the SRIM_data folder.
@@ -59,10 +59,6 @@ The Tree is update each 10 000 events and contains :
 - Gun Information (particle PDG, position, direction, energy)
 - Catchers Energy deposit
 - Plastic Scintillator (deposit energy, hit position, hit angle)
-- Silicon Detectors (deposit energy, hit position, hit angle, detector code, deposit energy in dead layer)
-
-### Histograms
-There are 2 for each strip, one for the β-p coincidence and an other one for the none-coincidence. The β detection threashold is set in the macro file.
 
 ## Analysis
 A very rapid analysis was made with PyROOT. To use it you have to indicate the filename in the main function.

@@ -25,7 +25,6 @@
 /Beam_Size 2 mm 300 um
 /Beam_Position 0 cm 0 cm
 
-/Setup 2023
 /Catcher_Position_z 0 mm
 /Catcher_Position catcher2 0 deg     position:[source / catcher2 / catcher1] #delta angle(degree)
 /Catcher_Thickness 50 500 50 nm     thickness : Al, Mylar Al (0 delete it)

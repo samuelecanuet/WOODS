@@ -25,79 +25,6 @@ Woods_Detector::Woods_Detector(Woods_RunManager *mgr)
 {
   cout << "Constructor Woods_Detectors" << endl;
   manager_ptr = mgr;
-
-  pDz = 1.5 * mm;    // Spessore del supporto (su cui soo messe le strip
-  pDy1 = 34.12 * mm; // Altezza (y) del trapezio sulla prima faccia. Se le facce non sono svasate é uguale a pDy2
-
-  thicknessSiDetector = 300. * um;
-  spazio_tra_Bordo_e_strip5 = 1.29 * mm + 0.225 * mm; // spazio tra bordo superiore e strip 5 (la più lunga). Per dettagli guardare disegno di Sean.
-  spazio_tra_Strip = 0.07 * mm;                       // spazio tra ciascuna strip
-  thetaInclinazione_SiDetector = 52.64 * degree;
-  G4double spazio_tra_Scintillatore_e_BordoSiDetector = 3.745 * mm;
-
-  // Riferito al disegno di Sean e di Mathieu (foto su telegram, piani stampati in data 17/05/2021 su formato A1)
-  xLow_SiDet_Strip_5 = 63.63 * mm;
-  y_SiDet_Strip_5 = 4.11 * mm;
-  xHigh_SiDet_Strip_5 = xLow_SiDet_Strip_5 + (2 * y_SiDet_Strip_5 * (cos(thetaInclinazione_SiDetector) / sin(thetaInclinazione_SiDetector)));
-  xLow_SiDet_Strip_4 = 56.58 * mm;
-  y_SiDet_Strip_4 = 4.55 * mm;
-  xHigh_SiDet_Strip_4 = xLow_SiDet_Strip_4 + (2 * y_SiDet_Strip_4 * (cos(thetaInclinazione_SiDetector) / sin(thetaInclinazione_SiDetector)));
-  xLow_SiDet_Strip_3 = 48.52 * mm;
-  y_SiDet_Strip_3 = 5.21 * mm;
-  xHigh_SiDet_Strip_3 = xLow_SiDet_Strip_3 + (2 * y_SiDet_Strip_3 * (cos(thetaInclinazione_SiDetector) / sin(thetaInclinazione_SiDetector)));
-  xLow_SiDet_Strip_2 = 38.82 * mm;
-  y_SiDet_Strip_2 = 6.28 * mm;
-  xHigh_SiDet_Strip_2 = xLow_SiDet_Strip_2 + (2 * y_SiDet_Strip_2 * (cos(thetaInclinazione_SiDetector) / sin(thetaInclinazione_SiDetector)));
-  xLow_SiDet_Strip_1 = 25.65 * mm;
-  y_SiDet_Strip_1 = 8.56 * mm;
-  xHigh_SiDet_Strip_1 = xLow_SiDet_Strip_1 + (2 * y_SiDet_Strip_1 * (cos(thetaInclinazione_SiDetector) / sin(thetaInclinazione_SiDetector)));
-
-  theta = (40) * degree; ////40deg
-  G4double z_height_Source_biggerBaseSiDet_inVerticale = 24.92 * mm;
-  r = fRadius_PlasticScintillator + spazio_tra_Scintillatore_e_BordoSiDetector + pDy1 / 2 - (pDy1 / 2 * (1 - cos(theta)));
-  r_vide = (pDz + thicknessSiDetector) / 2 * -sin(theta);
-  z_vide = -(pDz + thicknessSiDetector) / 2 * cos(theta);
-  z = z_height_Source_biggerBaseSiDet_inVerticale + pDz / 2 + ((pDy1 / 2) * sin(thetaInclinazione_SiDetector));
-
-  //___________ Supporto in rame della placca in PBC sulla quale é montato il Si detector  ____________
-  length_x_SupportoRame_SiDetector = 56. * mm;
-  height_y_SupportoRame_SiDetector = 33.548 * mm;
-  thickness_z_SupportoRame_SiDetector = 1.5 * mm;
-  x_smallBox_daTagliare_SupportoRame_SiDetector = 10. * mm; // 6
-  y_smallBox_daTagliare_SupportoRame_SiDetector = 10. * mm; // 5
-  distanza_latoDxBoxTagliata_e_bordoDxSupportoRame_SiDetector = 3.2 * mm;
-
-  /// colors ///
-  SiliconDetector_att = new G4VisAttributes(G4Colour(1., 0., 0.)); // red (r,g,b) ->red
-  SiliconDetector_att->SetForceWireframe(false);
-  SiliconDetector_att->SetForceSolid(true);
-
-  dic_position["1Up"] = G4ThreeVector(0, r, z);
-  dic_position["2Up"] = G4ThreeVector(r, 0, z);
-  dic_position["3Up"] = G4ThreeVector(0, -r, z);
-  dic_position["4Up"] = G4ThreeVector(-r, 0, z);
-  dic_position["1Down"] = G4ThreeVector(0, r, -z);
-  dic_position["2Down"] = G4ThreeVector(r, 0, -z);
-  dic_position["3Down"] = G4ThreeVector(0, -r, -z);
-  dic_position["4Down"] = G4ThreeVector(-r, 0, -z);
-
-  dic_positionvide["1Up"] = G4ThreeVector(0, r + r_vide, z + z_vide);
-  dic_positionvide["2Up"] = G4ThreeVector(r + r_vide, 0, z + z_vide);
-  dic_positionvide["3Up"] = G4ThreeVector(0, -r - r_vide, z + z_vide);
-  dic_positionvide["4Up"] = G4ThreeVector(-r - r_vide, 0, z + z_vide);
-  dic_positionvide["1Down"] = G4ThreeVector(0, r + r_vide, -z - z_vide);
-  dic_positionvide["2Down"] = G4ThreeVector(r + r_vide, 0, -z - z_vide);
-  dic_positionvide["3Down"] = G4ThreeVector(0, -r - r_vide, -z - z_vide);
-  dic_positionvide["4Down"] = G4ThreeVector(-r - r_vide, 0, -z - z_vide);
-
-  dic_rotate["1Up"] = std::make_tuple(theta, 180. * deg, 180 * deg);
-  dic_rotate["2Up"] = std::make_tuple(0, 180. * deg - theta, 90. * deg);
-  dic_rotate["3Up"] = std::make_tuple(-theta, 180. * deg, 0. * deg);
-  dic_rotate["4Up"] = std::make_tuple(0., 180. * deg + theta, -90. * deg);
-  dic_rotate["1Down"] = std::make_tuple(-theta, 0. * deg, 180. * deg);
-  dic_rotate["2Down"] = std::make_tuple(180 * deg, 180 * deg - theta, 90. * deg);
-  dic_rotate["3Down"] = std::make_tuple(theta, 0., 0.);
-  dic_rotate["4Down"] = std::make_tuple(180. * deg, 180. * deg + theta, -90. * deg);
 }
 
 // destructor
@@ -319,437 +246,14 @@ G4VPhysicalVolume *Woods_Detector::Construct()
   {
   }
 
-  // SUPPORT CATCHER 2023 //
-  ///////////////ELEMENTS//////////////
-
-  //=========================================================================================================================
-  //========================================== SILICON DETECTORS _ COMMON PARAMETERS ========================================
-  //=========================================================================================================================
-  G4double a, density;
-  G4String name, symbol;
-  G4int nelements, natoms, z;
-
-  // Il materiale che compone il supporto dei detector al silicio é il PCB. Non esiste nella libreria di G4, occorre fabbricarselo
-  G4Element *elSi = new G4Element(name = "Silicon", symbol = "Si", z = 14., a = 28.0855 * g / mole);
-  G4Element *elO = new G4Element(name = "Oxigen", symbol = "O", z = 8., a = 15.9994 * g / mole);
+  
   G4Material *Cu = G4NistManager::Instance()->FindOrBuildMaterial("G4_Cu");
   G4Material *Al = G4NistManager::Instance()->FindOrBuildMaterial("G4_Al");
   G4VisAttributes *Copper = new G4VisAttributes(G4Colour(0.72, 0.45, 0.2)); 
   Copper->SetForceWireframe(false);
-  Copper->SetForceSolid(true);                                  //(r,g,b) => magenta
-  materialSupportSiliconDetector = new G4Material(name = "Vetronite", density = 2. * g / cm3, nelements = 2); // vetro epossidico, ossia PCB
-  materialSupportSiliconDetector->AddElement(elSi, natoms = 1);
-  materialSupportSiliconDetector->AddElement(elO, natoms = 2);
+  Copper->SetForceSolid(true);    
 
-  G4double z_height_Source_biggerBaseSiDet_inVerticale = 24.92 * mm;
-
-  // Common parameteres to all Si detectors
-  G4double pTheta = 0. * degree;
-  G4double pPhi = 0. * degree;
-  G4double pDx1 = 83.3 * mm;   // Lunghezza (x) della base maggiore del trapezio sulla prima faccia. Se le facce non sono svasate é uguale a pDx3
-  G4double pDx2 = 31. * mm;    // Lunghezza (x) della base minore del trapezio sulla prima faccia. Se le facce non sono svasate é uguale a pDx4
-  G4double pAlp1 = 0 * degree; // Angolo tra i centri delle due facce
-  G4double pDy2 = 34.12 * mm;  // Altezza (y) del trapezio sulla prima faccia
-  G4double pDx3 = 83.3 * mm;   // Lunghezza (x) della base maggiore del trapezio sulla prima faccia
-  G4double pDx4 = 31. * mm;    // Lunghezza (x) della base minore del trapezio sulla prima faccia
-  G4double pAlp2 = 0. * degree;
-
-  supportSiliconDetector = new G4Trap("supportSiliconDetector",
-                                      pDz / 2, pTheta, pPhi, pDy1 / 2,
-                                      pDx1 / 2, pDx2 / 2, pAlp1, pDy2 / 2,
-                                      pDx3 / 2, pDx4 / 2, pAlp2);
-
-  SupportSiliconDetector_att = new G4VisAttributes(G4Colour(0.19, 0.8, 0.19)); // green PCB
-  SupportSiliconDetector_att->SetForceWireframe(false);
-  SupportSiliconDetector_att->SetForceSolid(true);
-
-  //========================================================================================================================
-  //============================================= PISTE DETECTOR SILICIO  ==================================================
-  //========================================================================================================================
-
-  materialSiliconDetector = G4NistManager::Instance()->FindOrBuildMaterial("G4_Si");
-  SiliconDetector_att = new G4VisAttributes(G4Colour(0., 0., 0.)); // red (r,g,b) ->red
-  SiliconDetector_att->SetForceWireframe(false);
-  SiliconDetector_att->SetForceSolid(true);
-
-  //___________ Supporto in rame della placca in PBC sulla quale é montato il Si detector  ____________
-  material_SupportoRame_SiliconDetector = G4NistManager::Instance()->FindOrBuildMaterial("G4_Cu");
-  G4VSolid *biggerBox_material_SupportoRame_SiliconDetector = new G4Box("biggerBox_material_SupportoRame_SiliconDetector", length_x_SupportoRame_SiDetector / 2, height_y_SupportoRame_SiDetector / 2, thickness_z_SupportoRame_SiDetector / 2);
-  G4VSolid *smallerBox_material_SupportoRame_SiliconDetector = new G4Box("smallerBox_material_SupportoRame_SiliconDetector", x_smallBox_daTagliare_SupportoRame_SiDetector / 2, y_smallBox_daTagliare_SupportoRame_SiDetector / 2, thickness_z_SupportoRame_SiDetector);
-  Box_material_SupportoRame_SiliconDetector = new G4SubtractionSolid("biggerBox_material_SupportoRame_SiliconDetector-smallerBox_material_SupportoRame_SiliconDetector",
-                                                                     biggerBox_material_SupportoRame_SiliconDetector, smallerBox_material_SupportoRame_SiliconDetector,
-                                                                     0,
-                                                                     G4ThreeVector(length_x_SupportoRame_SiDetector / 2 - distanza_latoDxBoxTagliata_e_bordoDxSupportoRame_SiDetector - x_smallBox_daTagliare_SupportoRame_SiDetector / 2,
-                                                                                   height_y_SupportoRame_SiDetector / 2 - y_smallBox_daTagliare_SupportoRame_SiDetector / 2,
-                                                                                   0.));
-
-  // Box_material_SupportoRame_SiliconDetector_att = new G4VisAttributes(G4Colour(1.0, 1.0, 1.0));      => white
-  // Box_material_SupportoRame_SiliconDetector_attvide = new G4VisAttributes(G4Colour(0.5, 0.2, 0.8));  => magenta
-  //  Box_material_SupportoRame_SiliconDetector_att->SetForceWireframe(false);
-  //  Box_material_SupportoRame_SiliconDetector_att->SetForceSolid(true);
-
-  // Support
-  supportSiliconDetector = new G4Trap("supportSiliconDetector",
-                                      pDz / 2, pTheta, pPhi, pDy1 / 2,
-                                      pDx1 / 2, pDx2 / 2, pAlp1, pDy2 / 2,
-                                      pDx3 / 2, pDx4 / 2, pAlp2);
-
-  // Mother volume
-  supportSiliconDetectorvide = new G4Trap("supportSiliconDetectorvide",
-                                          (thicknessSiDetector) / 2, pTheta, pPhi, pDy1 / 2,
-                                          pDx1 / 2, pDx2 / 2, pAlp1, pDy2 / 2,
-                                          pDx3 / 2, pDx4 / 2, pAlp2);
-
-  // Strip n. 5
-  SiDet_Strip_5 = new G4Trap("SiDet_Strip_5",
-                             thicknessSiDetector / 2, 0. * degree, 0. * degree, y_SiDet_Strip_5 / 2,
-                             xHigh_SiDet_Strip_5 / 2, xLow_SiDet_Strip_5 / 2, 0. * degree, y_SiDet_Strip_5 / 2,
-                             xHigh_SiDet_Strip_5 / 2, xLow_SiDet_Strip_5 / 2, 0. * degree);
-
-  // Strip n. 4
-  SiDet_Strip_4 = new G4Trap("SiDet_Strip_4",
-                             thicknessSiDetector / 2, 0. * degree, 0. * degree, y_SiDet_Strip_4 / 2,
-                             xHigh_SiDet_Strip_4 / 2, xLow_SiDet_Strip_4 / 2, 0. * degree, y_SiDet_Strip_4 / 2,
-                             xHigh_SiDet_Strip_4 / 2, xLow_SiDet_Strip_4 / 2, 0. * degree);
-
-  // Strip n. 3
-  SiDet_Strip_3 = new G4Trap("SiDet_Strip_3",
-                             thicknessSiDetector / 2, 0. * degree, 0. * degree, y_SiDet_Strip_3 / 2,
-                             xHigh_SiDet_Strip_3 / 2, xLow_SiDet_Strip_3 / 2, 0. * degree, y_SiDet_Strip_3 / 2,
-                             xHigh_SiDet_Strip_3 / 2, xLow_SiDet_Strip_3 / 2, 0. * degree);
-
-  // Strip n. 2
-  SiDet_Strip_2 = new G4Trap("SiDet_Strip_2",
-                             thicknessSiDetector / 2, 0. * degree, 0. * degree, y_SiDet_Strip_2 / 2,
-                             xHigh_SiDet_Strip_2 / 2, xLow_SiDet_Strip_2 / 2, 0. * degree, y_SiDet_Strip_2 / 2,
-                             xHigh_SiDet_Strip_2 / 2, xLow_SiDet_Strip_2 / 2, 0. * degree);
-
-  // Strip n. 1
-  SiDet_Strip_1 = new G4Trap("SiDet_Strip_1",
-                             thicknessSiDetector / 2, 0. * degree, 0. * degree, y_SiDet_Strip_1 / 2,
-                             xHigh_SiDet_Strip_1 / 2, xLow_SiDet_Strip_1 / 2, 0. * degree, y_SiDet_Strip_1 / 2,
-                             xHigh_SiDet_Strip_1 / 2, xLow_SiDet_Strip_1 / 2, 0. * degree);
-
-  ////////////////////////////Dead Layer//////////////////////////////////
-
-  // Strip n. 5
-  SiDet_Strip_5_dl = new G4Trap("SiDet_Strip_5_dl",
-                                thicknessSiDetectorDeadLayer / 2, 0. * degree, 0. * degree, y_SiDet_Strip_5 / 2,
-                                xHigh_SiDet_Strip_5 / 2, xLow_SiDet_Strip_5 / 2, 0. * degree, y_SiDet_Strip_5 / 2,
-                                xHigh_SiDet_Strip_5 / 2, xLow_SiDet_Strip_5 / 2, 0. * degree);
-
-  // Strip n. 4
-  SiDet_Strip_4_dl = new G4Trap("SiDet_Strip_4_dl",
-                                thicknessSiDetectorDeadLayer / 2, 0. * degree, 0. * degree, y_SiDet_Strip_4 / 2,
-                                xHigh_SiDet_Strip_4 / 2, xLow_SiDet_Strip_4 / 2, 0. * degree, y_SiDet_Strip_4 / 2,
-                                xHigh_SiDet_Strip_4 / 2, xLow_SiDet_Strip_4 / 2, 0. * degree);
-
-  // Strip n. 3
-  SiDet_Strip_3_dl = new G4Trap("SiDet_Strip_3_dl",
-                                thicknessSiDetectorDeadLayer / 2, 0. * degree, 0. * degree, y_SiDet_Strip_3 / 2,
-                                xHigh_SiDet_Strip_3 / 2, xLow_SiDet_Strip_3 / 2, 0. * degree, y_SiDet_Strip_3 / 2,
-                                xHigh_SiDet_Strip_3 / 2, xLow_SiDet_Strip_3 / 2, 0. * degree);
-
-  // Strip n. 2
-  SiDet_Strip_2_dl = new G4Trap("SiDet_Strip_2_dl",
-                                thicknessSiDetectorDeadLayer / 2, 0. * degree, 0. * degree, y_SiDet_Strip_2 / 2,
-                                xHigh_SiDet_Strip_2 / 2, xLow_SiDet_Strip_2 / 2, 0. * degree, y_SiDet_Strip_2 / 2,
-                                xHigh_SiDet_Strip_2 / 2, xLow_SiDet_Strip_2 / 2, 0. * degree);
-
-  // Strip n. 1
-  SiDet_Strip_1_dl = new G4Trap("SiDet_Strip_1_dl",
-                                thicknessSiDetectorDeadLayer / 2, 0. * degree, 0. * degree, y_SiDet_Strip_1 / 2,
-                                xHigh_SiDet_Strip_1 / 2, xLow_SiDet_Strip_1 / 2, 0. * degree, y_SiDet_Strip_1 / 2,
-                                xHigh_SiDet_Strip_1 / 2, xLow_SiDet_Strip_1 / 2, 0. * degree);
-
-  dic_strip[1] = std::make_tuple(SiDet_Strip_1, G4ThreeVector(0, -pDy1 / 2 + spazio_tra_Bordo_e_strip5 + y_SiDet_Strip_5 + spazio_tra_Strip + y_SiDet_Strip_4 + spazio_tra_Strip + y_SiDet_Strip_3 + spazio_tra_Strip + y_SiDet_Strip_2 + spazio_tra_Strip + y_SiDet_Strip_1 / 2, 0.), SiDet_Strip_1_dl);
-  dic_strip[2] = std::make_tuple(SiDet_Strip_2, G4ThreeVector(0, -pDy1 / 2 + spazio_tra_Bordo_e_strip5 + y_SiDet_Strip_5 + spazio_tra_Strip + y_SiDet_Strip_4 + spazio_tra_Strip + y_SiDet_Strip_3 + spazio_tra_Strip + y_SiDet_Strip_2 / 2, 0.), SiDet_Strip_2_dl);
-  dic_strip[3] = std::make_tuple(SiDet_Strip_3, G4ThreeVector(0, -pDy1 / 2 + spazio_tra_Bordo_e_strip5 + y_SiDet_Strip_5 + spazio_tra_Strip + y_SiDet_Strip_4 + spazio_tra_Strip + y_SiDet_Strip_3 / 2, 0.), SiDet_Strip_3_dl);
-  dic_strip[4] = std::make_tuple(SiDet_Strip_4, G4ThreeVector(0, -pDy1 / 2 + spazio_tra_Bordo_e_strip5 + y_SiDet_Strip_5 + spazio_tra_Strip + y_SiDet_Strip_4 / 2, 0.), SiDet_Strip_4_dl);
-  dic_strip[5] = std::make_tuple(SiDet_Strip_5, G4ThreeVector(0, -pDy1 / 2 + spazio_tra_Bordo_e_strip5 + y_SiDet_Strip_5 / 2, 0.), SiDet_Strip_5_dl);
-
-  // Loop to construct Silicon Detetors
-  int index = 0;
-  for (int i = 1; i < 5; i++)
-  {
-    for (const std::string &dir : directions)
-    {
-      tab[index] = Make_Sidet(i, dir, SiliconDetector_att, Box_material_SupportoRame_SiliconDetector_att,
-                              SupportSiliconDetector_att, Box_material_SupportoRame_SiliconDetector_attvide, materialSiliconDetector, material_SupportoRame_SiliconDetector, materialSupportSiliconDetector, vide);
-      index++;
-    }
-  }
-
-  //===================================================================================================================================================================
-  //===================================================================================================================================================================
-  //==================================================   WISArD PLASTIC SCINTILLATOR - WITH SUPPORT ===================================================================
-  //===================================================================================================================================================================
-  //===================================================================================================================================================================
-  // NB: per ogni dubbio sulle misure, consultare i disegni tecnici inviati da M. Roche (mail al mio indirizzo cenbg il 18/05/2021).
-  G4double distanza_tra_BaseInfScintillatore_e_BordoSuperioreDeiSiDetector = 25.575 * mm;
-  G4double delta = 0 * cm;
-  G4Material *fMaterial_PlasticScintillator = G4NistManager::Instance()->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
-
-  G4Tubs *fSolid_PlasticScintillator = new G4Tubs("PlasticScintillator", 0., fRadius_PlasticScintillator, 0.5 * fLength_PlasticScintillator, 0., 360 * deg);                                                                                   // name, r : 0->1cm, L : 5cm, phi : 0->2pi
-  G4LogicalVolume *fLogic_PlasticScintillator = new G4LogicalVolume(fSolid_PlasticScintillator, fMaterial_PlasticScintillator, "PlasticScintillator");                                                                                         // solid, material, name
-  G4PVPlacement *fPhys_PlasticScintillator = new G4PVPlacement(0,                                                                                                                                                                              // rotationMatrix
-                                                               G4ThreeVector(0., 0., z_height_Source_biggerBaseSiDet_inVerticale + distanza_tra_BaseInfScintillatore_e_BordoSuperioreDeiSiDetector + fLength_PlasticScintillator / 2 + delta), // position
-                                                               fLogic_PlasticScintillator, "PlasticScintillator",                                                                                                                              // its fLogical volume
-                                                               fLogicWorld,                                                                                                                                                                    // its mother volume
-                                                               false,                                                                                                                                                                          // no boolean op.
-                                                               0);                                                                                                                                                                             // copy nb.
-  G4VisAttributes *PlasticScintillator_att = new G4VisAttributes(G4Colour(0.6, 0.6, 0.6, 0.6));                                                                                                                                                // red
-  PlasticScintillator_att->SetForceWireframe(false);
-  PlasticScintillator_att->SetForceSolid(true);
-  fLogic_PlasticScintillator->SetVisAttributes(PlasticScintillator_att);
-
-  if (fPhys_PlasticScintillator == NULL)
-  {
-  }
-
-  G4double length_x_SupportoRame_PlasticScint = 20.5 * mm - 2 * mm;
-  G4double height_y_SupportoRame_PlasticScint = 20.5 * mm - 2 * mm;
-  G4double thickness_z_SupportoRame_PlasticScint = 1.5 * mm;
-
-  G4VSolid *bigBox_material_SupportoRame_PlasticScint = new G4Box("bigBox_material_SupportoRame_PlasticScint", length_x_SupportoRame_PlasticScint, height_y_SupportoRame_PlasticScint, thickness_z_SupportoRame_PlasticScint / 2); // corretto non div per due x e y
-  G4VSolid *holeForPlasticScint = new G4Tubs("holeForPlasticScint", 0., fRadius_PlasticScintillator, thickness_z_SupportoRame_PlasticScint, 0., 360 * deg);
-
-  G4VSolid *Box_material_SupportoRame_PlasticScint = new G4SubtractionSolid("Box_material_SupportoRame_PlasticScint",
-                                                                            bigBox_material_SupportoRame_PlasticScint, holeForPlasticScint,
-                                                                            0,
-                                                                            G4ThreeVector(0., 0., 0.));
-
-  G4LogicalVolume *logic_Box_material_SupportoRame_PlasticScint = new G4LogicalVolume(Box_material_SupportoRame_PlasticScint, Cu, "logic_Box_material_SupportoRame_PlasticScint"); // solid, material, name
-  G4VPhysicalVolume *physics_Box_material_SupportoRame_PlasticScint = new G4PVPlacement(0,                                                                                         // no rotation
-                                                                                        G4ThreeVector(0., 0., delta + z_height_Source_biggerBaseSiDet_inVerticale + distanza_tra_BaseInfScintillatore_e_BordoSuperioreDeiSiDetector + thickness_z_SupportoRame_SiDetector / 2),
-                                                                                        logic_Box_material_SupportoRame_PlasticScint, "logic_Box_material_SupportoRame_PlasticScint", // its fLogical volume
-                                                                                        fLogicWorld,                                                                                  // its mother volume
-                                                                                        false,                                                                                        // no boolean op.
-                                                                                        0);                                                                                           // copy nb.
-
-  logic_Box_material_SupportoRame_PlasticScint->SetVisAttributes(Copper);
-  
-
-  if (physics_Box_material_SupportoRame_PlasticScint == NULL)
-  {
-  }
-
-  G4double lenghtPlaccaCilidrica = fLength_PlasticScintillator - thickness_z_SupportoRame_SiDetector;
-
-  G4VSolid *placcaRame_Cilindrica = new G4Tubs("placcaRame_Cilindrica", fRadius_PlasticScintillator, fRadius_PlasticScintillator + thickness_z_SupportoRame_PlasticScint, lenghtPlaccaCilidrica / 2, 0., 360 * deg);
-  G4LogicalVolume *logic_placcaRame_Cilindrica = new G4LogicalVolume(placcaRame_Cilindrica, Cu, "placcaRame_Cilindrica"); // solid, material, name
-  G4VPhysicalVolume *physics_placcaRame_Cilindrica = new G4PVPlacement(0,                                                 // no rotation
-                                                                       G4ThreeVector(0., 0., delta + z_height_Source_biggerBaseSiDet_inVerticale + distanza_tra_BaseInfScintillatore_e_BordoSuperioreDeiSiDetector + thickness_z_SupportoRame_SiDetector + lenghtPlaccaCilidrica / 2),
-                                                                       logic_placcaRame_Cilindrica, "logic_placcaRame_Cilindrica", // its fLogical volume
-                                                                       fLogicWorld,                                                // its mother volume
-                                                                       false,                                                      // no boolean op.
-                                                                       0);
-
-  logic_placcaRame_Cilindrica->SetVisAttributes(Copper);
-  if (physics_placcaRame_Cilindrica == NULL)
-  {
-  }
-
-  //////// SET SENSITIVE DETECTOR OTHER THAN SiDet and Catcher /////////
-  fLogic_PlasticScintillator->SetSensitiveDetector(manager_ptr->GetWoodsSensor_PlasticScintillator());
-
-  return fPhysiWorld;
-}
-
-void Woods_Detector::SetSiDeadLayer_Thickness(G4double value)
-{
-  // Strip n. 5
-  SiDet_Strip_5_dl->SetAllParameters(
-      value / 2, 0. * degree, 0. * degree, y_SiDet_Strip_5 / 2,
-      xHigh_SiDet_Strip_5 / 2, xLow_SiDet_Strip_5 / 2, 0. * degree, y_SiDet_Strip_5 / 2,
-      xHigh_SiDet_Strip_5 / 2, xLow_SiDet_Strip_5 / 2, 0. * degree);
-
-  // Strip n. 4
-  SiDet_Strip_4_dl->SetAllParameters(
-      value / 2, 0. * degree, 0. * degree, y_SiDet_Strip_4 / 2,
-      xHigh_SiDet_Strip_4 / 2, xLow_SiDet_Strip_4 / 2, 0. * degree, y_SiDet_Strip_4 / 2,
-      xHigh_SiDet_Strip_4 / 2, xLow_SiDet_Strip_4 / 2, 0. * degree);
-
-  // Strip n. 3
-  SiDet_Strip_3_dl->SetAllParameters(
-      value / 2, 0. * degree, 0. * degree, y_SiDet_Strip_3 / 2,
-      xHigh_SiDet_Strip_3 / 2, xLow_SiDet_Strip_3 / 2, 0. * degree, y_SiDet_Strip_3 / 2,
-      xHigh_SiDet_Strip_3 / 2, xLow_SiDet_Strip_3 / 2, 0. * degree);
-
-  // Strip n. 2
-  SiDet_Strip_2_dl->SetAllParameters(
-      value / 2, 0. * degree, 0. * degree, y_SiDet_Strip_2 / 2,
-      xHigh_SiDet_Strip_2 / 2, xLow_SiDet_Strip_2 / 2, 0. * degree, y_SiDet_Strip_2 / 2,
-      xHigh_SiDet_Strip_2 / 2, xLow_SiDet_Strip_2 / 2, 0. * degree);
-
-  // Strip n. 1
-  SiDet_Strip_1_dl->SetAllParameters(
-      value / 2, 0. * degree, 0. * degree, y_SiDet_Strip_1 / 2,
-      xHigh_SiDet_Strip_1 / 2, xLow_SiDet_Strip_1 / 2, 0. * degree, y_SiDet_Strip_1 / 2,
-      xHigh_SiDet_Strip_1 / 2, xLow_SiDet_Strip_1 / 2, 0. * degree);
-
-  int index = 0;
-  for (int i = 1; i < 5; i++)
-  {
-    for (const std::string &dir : directions)
-    {
-      get<7>(tab[index]).second->SetTranslation(G4ThreeVector(0., 0., thicknessSiDetector / 2 - value / 2));
-      get<8>(tab[index]).second->SetTranslation(G4ThreeVector(0., 0., thicknessSiDetector / 2 - value / 2));
-      get<9>(tab[index]).second->SetTranslation(G4ThreeVector(0., 0., thicknessSiDetector / 2 - value / 2));
-      get<10>(tab[index]).second->SetTranslation(G4ThreeVector(0., 0., thicknessSiDetector / 2 - value / 2));
-      get<11>(tab[index]).second->SetTranslation(G4ThreeVector(0., 0., thicknessSiDetector / 2 - value / 2));
-      index++;
-    }
-  }
-  G4RunManager::GetRunManager()->GeometryHasBeenModified();
-}
-
-void Woods_Detector::SetBFieldValue(G4double value)
-{
-  G4FieldManager *pFieldMgr;
-  // G4MagneticField *WoodsMagField = new WoodsMagnetField(GetInputNameB(), value); /// NON UNIFORM MAG FIELD GETFIELDVALUE method
-  G4MagneticField *WoodsMagField = new G4UniformMagField(G4ThreeVector(0., 0., value));
-  pFieldMgr = G4TransportationManager::GetTransportationManager()->GetFieldManager();
-  G4ChordFinder *pChordFinder = new G4ChordFinder(WoodsMagField);
-  pChordFinder->SetDeltaChord(1 * um);
-  pFieldMgr->SetChordFinder(pChordFinder);
-  pFieldMgr->SetDetectorField(WoodsMagField);
-  G4RunManager::GetRunManager()->GeometryHasBeenModified();
-}
-
-void Woods_Detector::SetCatcherPosition_z(G4double value)
-{
-  phys_mother_catcher->SetTranslation(phys_mother_catcher->GetTranslation() + G4ThreeVector(0, 0, value));
-  G4RunManager::GetRunManager()->GeometryHasBeenModified();
-}
-
-void Woods_Detector::SetCatcher_Thickness(G4double Al1_e, G4double Mylar_e, G4double Al2_e)
-{
-  G4int counter = 0;
-  G4double shift = 0;
-  G4double shift1 = 0;
-  G4double shift2 = 0;
-
-  if (Al1_e == -1.)
-  {
-    shift1 = 5*cm;
-    Al1_e = DBL_MIN;
-  }
-  else
-  {
-    counter++;
-    Physics_AlSource1_central->SetCopyNo(counter);
-  }
-  if (Mylar_e == -1.)
-  {
-    shift = 5*cm;
-    Mylar_e = DBL_MIN;
-  }
-  else
-  {
-    counter++;
-    Physics_MylarSource_central->SetCopyNo(counter);
-  }
-  if (Al2_e == -1.)
-  {
-    shift2 = 5*cm;
-    Al2_e = DBL_MIN;
-  }
-  else
-  {
-    counter++;
-    Physics_AlSource2_central->SetCopyNo(counter);
-  }
-
-  if (Setup_Version == 2023)
-  {
-    if (Catcher_Position == "catcher2")
-    {
-      Physics_AlSource1_central->SetTranslation(Physics_AlSource1_central->GetTranslation() + G4ThreeVector(0,shift1,-AlSource1 ->GetZHalfLength()+Al1_e/2));
-      AlSource1 ->SetZHalfLength(Al1_e/2);
-      G4RunManager::GetRunManager()->GeometryHasBeenModified();
-      
-      Physics_MylarSource_central->SetTranslation(Physics_AlSource1_central->GetTranslation() + G4ThreeVector(0,shift-shift1,Al1_e/2 + Mylar_e/2));
-      MylarSource_central->SetZHalfLength(Mylar_e/2);
-      G4RunManager::GetRunManager()->GeometryHasBeenModified();
-
-      Physics_AlSource2_central->SetTranslation(Physics_MylarSource_central->GetTranslation() + G4ThreeVector(0,shift2-shift,Mylar_e/2 + Al2_e/2));
-      AlSource2 ->SetZHalfLength(Al2_e/2);
-    }
-
-    else if (Catcher_Position == "catcher1")
-    {
-      Physics_AlSource1_side->SetTranslation(Physics_AlSource1_side->GetTranslation() + G4ThreeVector(0,shift1,-AlSource1 ->GetZHalfLength()+Al1_e/2));
-      AlSource1 ->SetZHalfLength(Al1_e/2);
-      G4RunManager::GetRunManager()->GeometryHasBeenModified();
-
-      Physics_MylarSource_side->SetTranslation(Physics_AlSource1_side->GetTranslation() + G4ThreeVector(0,shift-shift1,Al1_e/2 + Mylar_e/2));
-      MylarSource_side->SetZHalfLength(Mylar_e/2);
-      G4RunManager::GetRunManager()->GeometryHasBeenModified();
-
-      Physics_AlSource2_side->SetTranslation(Physics_MylarSource_side->GetTranslation() + G4ThreeVector(0,shift2-shift-shift1,Mylar_e/2 + Al2_e/2));
-      AlSource2 ->SetZHalfLength(Al2_e/2);
-    }
-
-    else if (Catcher_Position == "source")
-    {
-      Physics_Source->SetTranslation(Physics_Source->GetTranslation() + G4ThreeVector(0, 0, 0));
-    }
-  }
-
-  else if (Setup_Version == 2021)
-  {
-    Physics_AlSource1_central->SetTranslation(Physics_AlSource1_central->GetTranslation() + G4ThreeVector(0,shift1,-AlSource1 ->GetZHalfLength()+Al1_e/2));
-    AlSource1 ->SetZHalfLength(Al1_e/2);
-    G4RunManager::GetRunManager()->GeometryHasBeenModified();
-
-    Physics_MylarSource_central->SetTranslation(Physics_AlSource1_central->GetTranslation() + G4ThreeVector(0,shift-shift1,Al1_e/2 + Mylar_e/2));
-    MylarSource_central->SetZHalfLength(Mylar_e/2);
-    G4RunManager::GetRunManager()->GeometryHasBeenModified();
-
-    Physics_AlSource2_central->SetTranslation(Physics_MylarSource_central->GetTranslation() + G4ThreeVector(0,shift2-shift,Mylar_e/2 + Al2_e/2));
-    AlSource2 ->SetZHalfLength(Al2_e/2);   
-  }
-  G4RunManager::GetRunManager()->GeometryHasBeenModified();
-}
-
-void Woods_Detector::SetCatcherPosition_theta(G4String position, G4double value)
-{
-  G4RotationMatrix *myRotation = new G4RotationMatrix();
-  myRotation->rotateX(0. * deg);
-  myRotation->rotateY(0. * deg);
-  Catcher_Position = position;
-
-  if (position == "source")
-  {
-    myRotation->rotateZ(30 * deg + value);
-  }
-  else if (position == "catcher2")
-  {
-    myRotation->rotateZ(value);
-  }
-  else if (position == "catcher1")
-  {
-    myRotation->rotateZ(-22.5 * deg + value);
-  }
-  else
-  {
-    G4Exception("Woods_Detector", ("Wrong Catcher position : " + position).c_str(), JustWarning, "");
-  }
-
-  phys_mother_catcher->SetRotation(myRotation);
-  G4RunManager::GetRunManager()->GeometryHasBeenModified();
-}
-
-void Woods_Detector::SetSetup(G4int Year)
-{
-  Setup_Version = Year;
-  if (Year == 2023)
-  {
-    G4double outerRadius = 6.5 * cm;
-    G4Material *Cu = G4NistManager::Instance()->FindOrBuildMaterial("G4_Cu");
-    G4Material *Al = G4NistManager::Instance()->FindOrBuildMaterial("G4_Al");
-    G4VisAttributes *Copper = new G4VisAttributes(G4Colour(0.72, 0.45, 0.2)); //(r,g,b) => magenta
+  outerRadius = 6.5 * cm;
 
     // MOTHER CATCHER
     G4double Radius_Rotation = 50 * mm;
@@ -1018,226 +522,298 @@ void Woods_Detector::SetSetup(G4int Year)
     Logic_AlSource2_central->SetSensitiveDetector(manager_ptr->GetWoodsSensor_CatcherAl2_central());
     Logic_MylarSource_side->SetSensitiveDetector(manager_ptr->GetWoodsSensor_CatcherMylar_side());
     Logic_AlSource1_side->SetSensitiveDetector(manager_ptr->GetWoodsSensor_CatcherAl1_side());
-    Logic_AlSource2_side->SetSensitiveDetector(manager_ptr->GetWoodsSensor_CatcherAl2_side());
-  }
+    Logic_AlSource2_side->SetSensitiveDetector(manager_ptr->GetWoodsSensor_CatcherAl2_side());                              
 
-  else if (Year == 2021)
+  //===================================================================================================================================================================
+  //===================================================================================================================================================================
+  //==================================================   WISArD PLASTIC SCINTILLATOR - WITH SUPPORT ===================================================================
+  //===================================================================================================================================================================
+  //===================================================================================================================================================================
+  // NB: per ogni dubbio sulle misure, consultare i disegni tecnici inviati da M. Roche (mail al mio indirizzo cenbg il 18/05/2021).
+
+
+  ////////////////////UPPER///////////////////////////
+  G4double distanza_tra_BaseInfScintillatore_e_BordoSuperioreDeiSiDetector = 25.575 * mm;
+  G4double z_height_Source_biggerBaseSiDet_inVerticale = 24.92 * mm;
+  G4double thickness_z_SupportoRame_SiDetector = 1.5 * mm;
+  G4double delta = 0 * cm;
+  G4Material *fMaterial_PlasticScintillator = G4NistManager::Instance()->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
+
+  fSolid_PlasticScintillator = new G4Tubs("PlasticScintillator", 0., fRadius_PlasticScintillator, 0.5 * fLength_PlasticScintillator, 0., 360 * deg);   
+                                                                                  // name, r : 0->1cm, L : 5cm, phi : 0->2pi
+  G4LogicalVolume *fLogic_PlasticScintillatorUp = new G4LogicalVolume(fSolid_PlasticScintillator, fMaterial_PlasticScintillator, "PlasticScintillator");                                                                                         // solid, material, name
+  fPhys_PlasticScintillatorUp = new G4PVPlacement(0,                                                                                                                                                                              // rotationMatrix
+                                                               G4ThreeVector(0., 0., z_height_Source_biggerBaseSiDet_inVerticale + distanza_tra_BaseInfScintillatore_e_BordoSuperioreDeiSiDetector + fLength_PlasticScintillator / 2 + delta), // position
+                                                               fLogic_PlasticScintillatorUp, "PlasticScintillatorUp",                                                                                                                              // its fLogical volume
+                                                               fLogicWorld,                                                                                                                                                                    // its mother volume
+                                                               false,                                                                                                                                                                          // no boolean op.
+                                                               0);                                                                                                                                                                             // copy nb.
+  G4VisAttributes *PlasticScintillator_att = new G4VisAttributes(G4Colour(0.6, 0.6, 0.6, 0.6));                                                                                                                                                // red
+  PlasticScintillator_att->SetForceWireframe(false);
+  PlasticScintillator_att->SetForceSolid(true);
+  fLogic_PlasticScintillatorUp->SetVisAttributes(PlasticScintillator_att);
+
+  if (fPhys_PlasticScintillatorUp == NULL)
   {
-    G4double outerRadius = 6.5 * cm;
-    // MOTHER CATCHER
-    G4double Radius_Rotation = 50 * mm;
-    G4Tubs *mother_catcher = new G4Tubs("mother", 0., outerRadius * 5, 5 * mm, 0., 360. * deg);
-    G4LogicalVolume *logic_mother_catcher = new G4LogicalVolume(mother_catcher, vide, "logic_mother_catcher");
-    phys_mother_catcher = new G4PVPlacement(0, // no rotation
-                                            G4ThreeVector(0, -Radius_Rotation, 0),
-                                            logic_mother_catcher, // its fLogical volume
-                                            "mothercatcher",      // its name
-                                            fLogicWorld,          // its mother  volume
-                                            false,                // no boolean operation
-                                            0);
-
-    // ===========================================================================================================
-    // ================================ CATCHER/SORGENTE RAD./SUPPORTO  ==========================================
-    // ===========================================================================================================
-    // Guardiamo il supporto del catcher dalla parte attaccata al perno verso la sorgente.
-    // La parte 1 è il supporto rettangolare lungo, la parte 2 è il il supporto rettangolare largo su cui si trovano i buchi per il catcher e il posizionamento sorgente radioattiva.
-    // Per maggiori dettagli vedere mail M. Roche 10/06/2021 alle ore 11-50 circa (e foto su cui ho scritto ed evidenziato salvata su telegram).
-    G4double x_baseCatcher_Spessa_1 = 14. * mm;
-    G4double y_baseCatcher_Spessa_1 = 16. * mm;
-    G4double thickness_baseCatcher_Spessa_1 = 12. * mm;
-    G4double radius_buco_baseSpessa = 5. * mm;
-    G4double pos_buco_baseSpessa = 0.8963 * mm;
-    G4double x_baseCatcher_Sottile_1 = x_baseCatcher_Spessa_1;
-    G4double y_baseCatcher_Sottile_1 = 24. * mm;
-    G4double thickness_baseCatcher_Sottile_1 = 4. * mm; /////Federica 4mm
-    G4double x_baseCatcher_2 = 60. * mm;
-    G4double y_baseCatcher_2 = 32. * mm;
-    G4double z_baseCatcher_2 = thickness_baseCatcher_Sottile_1; // NB: tutte le misure precedenti sono state prese direttamente dai disegni tecnici di M. Roche
-    G4double radius_ext_bucoCatcher = (25. / 2) * mm;
-    G4double radius_bucoCatcher = (15. / 2) * mm;
-    G4double thickness_supp_catcher = 2. * mm;
-    G4double radius_bucoSource = (20. / 2) * mm;
-    // G4double thickness_supp_radSource        = 3.*mm;
-    // G4double altezza_supp_radSource          = 0.5*mm; //Da Verificare
-    G4double x_pos_bucoCatcher = (25.88 / 2) * mm;
-    // G4double x_pos_bucoSource                = x_pos_bucoCatcher;
-    G4double x_y_triangularCut_baseSpessa = 5. * mm;
-    G4double x_y_triangularCut_baseSottile = 8. * mm;
-    G4Material *materialSupport_Catcher_source = G4NistManager::Instance()->FindOrBuildMaterial("G4_Al");
-
-    G4RotationMatrix *myRotation_trSupp = new G4RotationMatrix();
-    myRotation_trSupp->rotateX(0. * deg);
-    myRotation_trSupp->rotateY(180. * deg);
-    myRotation_trSupp->rotateZ(0. * rad);
-
-    G4RotationMatrix *myRotation_trSupp2 = new G4RotationMatrix();
-    myRotation_trSupp2->rotateX(180. * deg);
-    myRotation_trSupp2->rotateY(180. * deg);
-    myRotation_trSupp2->rotateZ(0. * rad);
-
-    G4RotationMatrix *myRotation_trSupp3 = new G4RotationMatrix();
-    myRotation_trSupp3->rotateX(180. * deg);
-    myRotation_trSupp3->rotateY(0. * deg);
-    myRotation_trSupp3->rotateZ(0. * rad);
-
-    G4Box *SuppCatcher_baseSpessa_senzaBuco = new G4Box("SuppCatcher_baseSpessa_senzaBuco", x_baseCatcher_Spessa_1 / 2, y_baseCatcher_Spessa_1 / 2, thickness_baseCatcher_Spessa_1 / 2);
-    G4Tubs *bucoBaseSpessa = new G4Tubs("bucoBaseSpessa", 0., radius_buco_baseSpessa, 2 * thickness_baseCatcher_Spessa_1, 0., 360 * deg);
-    G4VSolid *SuppCatcher_baseSpessa_intera = new G4SubtractionSolid("SuppCatcher_baseSpessa_intera", SuppCatcher_baseSpessa_senzaBuco, bucoBaseSpessa, 0, G4ThreeVector(0., -0.2962 * mm, 0.));
-
-    const G4int nsect = 3;
-    std::vector<G4TwoVector> polygon(nsect);
-    polygon[0].set(x_y_triangularCut_baseSpessa, 0.);
-    polygon[1].set(0., 0.);
-    polygon[2].set(x_y_triangularCut_baseSpessa, x_y_triangularCut_baseSpessa);
-
-    G4TwoVector offsetA(0, 0), offsetB(0, 0);
-    G4double scaleA = 1, scaleB = 1;
-    G4VSolid *triangularCut_baseSpessa = new G4ExtrudedSolid("triangularCut_baseSpessa", polygon, thickness_baseCatcher_Spessa_1, offsetA, scaleA, offsetB, scaleB);
-
-    G4VSolid *SuppCatcher_baseSpessa_parziale = new G4SubtractionSolid("SuppCatcher_baseSpessa_parziale", SuppCatcher_baseSpessa_intera, triangularCut_baseSpessa, 0, G4ThreeVector(x_baseCatcher_Spessa_1 / 2 - x_y_triangularCut_baseSpessa + 0.5 * mm, -y_baseCatcher_Spessa_1 / 2, 0.));
-    G4VSolid *SuppCatcher_baseSpessa = new G4SubtractionSolid("SuppCatcher_baseSpessa", SuppCatcher_baseSpessa_parziale, triangularCut_baseSpessa, myRotation_trSupp, G4ThreeVector(-x_baseCatcher_Spessa_1 / 2 + x_y_triangularCut_baseSpessa - 0.5 * mm, -y_baseCatcher_Spessa_1 / 2 - 0.5 * mm, 0.));
-
-    G4ThreeVector pos_SuppCatcher_baseSpessa = G4ThreeVector(0., pos_buco_baseSpessa, 0.);
-    G4Transform3D tr_SuppCatcher_baseSpessa = G4Transform3D(G4RotationMatrix(), pos_SuppCatcher_baseSpessa);
-
-    G4Box *SuppCatcher_baseSottile = new G4Box("SuppCatcher_baseSottile", x_baseCatcher_Sottile_1 / 2, y_baseCatcher_Sottile_1 / 2, thickness_baseCatcher_Sottile_1 / 2);
-    G4ThreeVector pos_SuppCatcher_baseSottile = G4ThreeVector(0., y_baseCatcher_Spessa_1 / 2 + y_baseCatcher_Sottile_1 / 2, thickness_baseCatcher_Spessa_1 / 2 - thickness_baseCatcher_Sottile_1 / 2);
-    G4Transform3D tr_SuppCatcher_baseSottile = G4Transform3D(G4RotationMatrix(), pos_SuppCatcher_baseSottile);
-
-    G4Box *SuppCatcher_base_2_senzaBuco = new G4Box("SuppCatcher_base_2_senzaBuco", x_baseCatcher_2 / 2, y_baseCatcher_2 / 2, z_baseCatcher_2 / 2);
-    G4Tubs *bucoCatcher = new G4Tubs("bucoCatcher", 0., radius_bucoCatcher, 2 * z_baseCatcher_2, 0., 360 * deg);
-    G4VSolid *SuppCatcher_base_2_conBucoCatcher = new G4SubtractionSolid("SuppCatcher_baseSpessa_conbucoCatcher", SuppCatcher_base_2_senzaBuco, bucoCatcher, 0, G4ThreeVector(-x_pos_bucoCatcher, 0., 0.));
-    G4Tubs *bucoSource = new G4Tubs("bucoSource", 0., radius_bucoSource, 2 * z_baseCatcher_2, 0., 360 * deg);
-    G4VSolid *SuppCatcher_base_2_intero = new G4SubtractionSolid("SuppCatcher_base_2_intero", SuppCatcher_base_2_conBucoCatcher, bucoSource, 0, G4ThreeVector(x_pos_bucoCatcher, 0., 0.));
-
-    std::vector<G4TwoVector> polygon2(nsect);
-    polygon2[0].set(x_y_triangularCut_baseSottile, 0.);
-    polygon2[1].set(0., 0.);
-    polygon2[2].set(x_y_triangularCut_baseSottile, x_y_triangularCut_baseSottile);
-
-    G4VSolid *triangularCut_baseSottile = new G4ExtrudedSolid("triangularCut_baseSottile", polygon2, thickness_baseCatcher_Spessa_1, offsetA, scaleA, offsetB, scaleB);
-    G4VSolid *SuppCatcher_base_2_unAngolo = new G4SubtractionSolid("SuppCatcher_base_2_unAngolo", SuppCatcher_base_2_intero, triangularCut_baseSottile, 0, G4ThreeVector(+x_baseCatcher_2 / 2 - x_y_triangularCut_baseSottile + 0.5 * mm, -y_baseCatcher_2 / 2 - 0.5 * mm, 0.));
-    G4VSolid *SuppCatcher_base_2_dueAngoli = new G4SubtractionSolid("SuppCatcher_base_2_dueAngoli", SuppCatcher_base_2_unAngolo, triangularCut_baseSottile, myRotation_trSupp, G4ThreeVector(-x_baseCatcher_2 / 2 + x_y_triangularCut_baseSottile - 0.5 * mm, -y_baseCatcher_2 / 2 - 0.5 * mm, 0.));
-    G4VSolid *SuppCatcher_base_2_treAngoli = new G4SubtractionSolid("SuppCatcher_base_2_treAngoli", SuppCatcher_base_2_dueAngoli, triangularCut_baseSottile, myRotation_trSupp2, G4ThreeVector(-x_baseCatcher_2 / 2 + x_y_triangularCut_baseSottile - 0.5 * mm, +y_baseCatcher_2 / 2 + 0.5 * mm, 0.));
-    G4VSolid *SuppCatcher_base_2 = new G4SubtractionSolid("SuppCatcher_base_2", SuppCatcher_base_2_treAngoli, triangularCut_baseSottile, myRotation_trSupp3, G4ThreeVector(x_baseCatcher_2 / 2 - x_y_triangularCut_baseSottile + 0.5 * mm, +y_baseCatcher_2 / 2 + 0.5 * mm, 0.));
-
-    G4ThreeVector pos_SuppCatcher_base_2 = G4ThreeVector(0., y_baseCatcher_Spessa_1 / 2 + y_baseCatcher_Sottile_1 + y_baseCatcher_2 / 2, thickness_baseCatcher_Spessa_1 / 2 - z_baseCatcher_2 / 2);
-    G4Transform3D tr_SuppCatcher_base_2 = G4Transform3D(G4RotationMatrix(), pos_SuppCatcher_base_2);
-
-    G4MultiUnion *munion_supportCatcher_Source = new G4MultiUnion("munion_supportCatcher_Source");
-    munion_supportCatcher_Source->AddNode(*SuppCatcher_baseSpessa, tr_SuppCatcher_baseSpessa);
-    munion_supportCatcher_Source->AddNode(*SuppCatcher_baseSottile, tr_SuppCatcher_baseSottile);
-    munion_supportCatcher_Source->AddNode(*SuppCatcher_base_2, tr_SuppCatcher_base_2);
-    munion_supportCatcher_Source->Voxelize();
-
-    G4LogicalVolume *logic_munion_supportCatcher_Source = new G4LogicalVolume(munion_supportCatcher_Source, materialSupport_Catcher_source, "logic_munion_supportCatcher_Source");
-    G4VPhysicalVolume *phys_munion_supportCatcher_Source = new G4PVPlacement(0,                                                                                                                                                                      // no rotation
-                                                                             G4ThreeVector(x_pos_bucoCatcher, -(y_baseCatcher_Spessa_1 / 2 + y_baseCatcher_Sottile_1 + y_baseCatcher_2 / 2)+Radius_Rotation, -(thickness_baseCatcher_Spessa_1 / 2)), //+thickness_supp_catcher/2   //at (0,0,0) //thickness_baseCatcher_Sottile_1
-                                                                             logic_munion_supportCatcher_Source,                                                                                                                                     // its fLogical volume
-                                                                             "phys_munion_supportCatcher_Source",                                                                                                                                    // its name
-                                                                             logic_mother_catcher,                                                                                                                                                            // its mother  volume
-                                                                             false,                                                                                                                                                                  // no boolean operation
-                                                                             0,
-                                                                             false); // copy number
-
-    G4VisAttributes *visAtt_munion_supportCatcher_Source = new G4VisAttributes(G4Colour(0.8, 0.8, 0.8));
-    visAtt_munion_supportCatcher_Source->SetVisibility(true);
-    visAtt_munion_supportCatcher_Source->SetForceWireframe(false);
-    visAtt_munion_supportCatcher_Source->SetForceSolid(true);
-    logic_munion_supportCatcher_Source->SetVisAttributes(visAtt_munion_supportCatcher_Source);
-
-    if (phys_munion_supportCatcher_Source == NULL)
-    {
-    }
-    // G4double x_pos_Catcher_risp_munion   = x_pos_bucoCatcher;
-    G4double y_pos_Catcher_risp_munion = y_baseCatcher_Spessa_1 / 2 + y_baseCatcher_Sottile_1 + y_baseCatcher_2 / 2;
-
-    G4Tubs *Supp_catcher = new G4Tubs("Supp_catcher", radius_bucoCatcher, radius_ext_bucoCatcher, thickness_supp_catcher / 2, 0., 360 * deg);
-    G4LogicalVolume *logic_Supp_catcher = new G4LogicalVolume(Supp_catcher, materialSupport_Catcher_source, "logic_Supp_catcher");
-    G4VPhysicalVolume *phys_Supp_catcher = new G4PVPlacement(0,                                                                                                // no rotation
-                                                             G4ThreeVector(0, Radius_Rotation, thickness_supp_catcher/2), // at (0,0,0)
-                                                             logic_Supp_catcher,                                                                               // its fLogical volume
-                                                             "phys_Supp_catcher",                                                                              // its name
-                                                             logic_mother_catcher,                                                               // its mother  volume
-                                                             false,                                                                                            // no boolean operation
-                                                             0,
-                                                             false); // copy number
-
-    G4VisAttributes *visAtt_Supp_catcher = new G4VisAttributes(G4Colour(0.3, 0.3, 0.3));
-    visAtt_Supp_catcher->SetVisibility(true);
-    visAtt_Supp_catcher->SetForceWireframe(false);
-    visAtt_Supp_catcher->SetForceSolid(true);
-    logic_Supp_catcher->SetVisAttributes(visAtt_Supp_catcher);
-
-    if (phys_Supp_catcher == NULL)
-    {
-    }
-
-    G4Material *Mylar = G4NistManager::Instance()->FindOrBuildMaterial("G4_MYLAR");
-    G4Material *Al = G4NistManager::Instance()->FindOrBuildMaterial("G4_Al");
-
-
-    thicknessAlSource = 50*nm;
-    G4double thicknessMylarSource = 6. * um;
-    G4double outerRadius_MylarSource = radius_bucoCatcher;
-
-    AlSource1 = new G4Tubs("AlSource1_central", 0., outerRadius_MylarSource, thicknessAlSource / 2, 0., 360. * deg);
-    G4LogicalVolume *Logic_AlSource1_central = new G4LogicalVolume(AlSource1, Al, "LogicAlSource1_central");               // solid, material, name
-    Physics_AlSource1_central = new G4PVPlacement(0,                                                                       // no rotation
-                                                  Catcher_central_Position + G4ThreeVector(0., Radius_Rotation,  thicknessAlSource/2 ), // position
-                                                  Logic_AlSource1_central, "LogicAlSource1_central",                       // its fLogical volume
-                                                  logic_mother_catcher,                                                    // its mother volume
-                                                  false,                                                                   // no boolean op.
-                                                  0);                                                                      // copy nb.
-                                                  
-
-    MylarSource_central = new G4Tubs("MylarSource", 0., outerRadius_MylarSource, thicknessMylarSource / 2, 0., 360. * deg);
-    G4LogicalVolume *Logic_MylarSource_central = new G4LogicalVolume(MylarSource_central, Mylar, "LogicMylarSource"); // solid, material, name
-    Physics_MylarSource_central = new G4PVPlacement(0,                                     // no rotation
-                                                               G4ThreeVector(0., Radius_Rotation, thicknessAlSource + thicknessMylarSource/2),             // position
-                                                               Logic_MylarSource_central, "LogicMylarSource", // its fLogical volume
-                                                               logic_mother_catcher,                           // its mother volume
-                                                               false,                                 // no boolean op.
-                                                               0); // copy nb. 
-
-    AlSource2 = new G4Tubs("AlSource2_central", 0., outerRadius_MylarSource, thicknessAlSource / 2, 0., 360. * deg);
-    G4LogicalVolume *Logic_AlSource2_central = new G4LogicalVolume(AlSource2, Al, "LogicAlSource2_central");                                                                  // solid, material, name
-    Physics_AlSource2_central = new G4PVPlacement(0,                                                                                                                          // no rotation
-                                                  Catcher_central_Position + G4ThreeVector(0., Radius_Rotation, thicknessAlSource / 2 + thicknessMylarSource + thicknessAlSource), // position
-                                                  Logic_AlSource2_central, "LogicAlSource2_central",                                                                          // its fLogical volume
-                                                  logic_mother_catcher,                                                                                                       // its mother volume
-                                                  false,                                                                                                                      // no boolean op.
-                                                  0);    
-
-    G4VisAttributes *MylarSource_att = new G4VisAttributes(G4Colour(0.94, 0.5, 0.5)); // pink
-    MylarSource_att->SetVisibility(true);
-    MylarSource_att->SetForceWireframe(false);
-    MylarSource_att->SetForceSolid(true);
-    Logic_MylarSource_central->SetVisAttributes(MylarSource_att);
-
-    G4VisAttributes *AlSource_att = new G4VisAttributes(G4Colour(0.94, 0.2, 0.5)); // pink
-    AlSource_att->SetVisibility(true);
-    AlSource_att->SetForceWireframe(false);
-    AlSource_att->SetForceSolid(true);
-    Logic_AlSource1_central->SetVisAttributes(AlSource_att);
-    Logic_AlSource2_central->SetVisAttributes(AlSource_att);
-
-    
-
-
-    if (Physics_MylarSource == NULL)
-    {
-    }
-
-    Logic_MylarSource_central->SetSensitiveDetector(manager_ptr->GetWoodsSensor_CatcherMylar_central());
-    Logic_AlSource1_central->SetSensitiveDetector(manager_ptr->GetWoodsSensor_CatcherAl1_central());
-    Logic_AlSource2_central->SetSensitiveDetector(manager_ptr->GetWoodsSensor_CatcherAl2_central());
   }
 
+  G4double length_x_SupportoRame_PlasticScint = 20.5 * mm - 2 * mm;
+  G4double height_y_SupportoRame_PlasticScint = 20.5 * mm - 2 * mm;
+  
+
+  bigBox_material_SupportoRame_PlasticScint = new G4Box("bigBox_material_SupportoRame_PlasticScint", length_x_SupportoRame_PlasticScint, height_y_SupportoRame_PlasticScint, thickness_z_SupportoRame_PlasticScint / 2); // corretto non div per due x e y
+  holeForPlasticScint = new G4Tubs("holeForPlasticScint", 0., fRadius_PlasticScintillator, thickness_z_SupportoRame_PlasticScint, 0., 360 * deg);
+
+  Box_material_SupportoRame_PlasticScint = new G4SubtractionSolid("Box_material_SupportoRame_PlasticScint",
+                                                                            bigBox_material_SupportoRame_PlasticScint, holeForPlasticScint,
+                                                                            0,
+                                                                            G4ThreeVector(0., 0., 0.));
+
+  G4LogicalVolume *logic_Box_material_SupportoRame_PlasticScintUp = new G4LogicalVolume(Box_material_SupportoRame_PlasticScint, Cu, "logic_Box_material_SupportoRame_PlasticScintUp"); // solid, material, name
+  physics_Box_material_SupportoRame_PlasticScintUp = new G4PVPlacement(0,                                                                                         // no rotation
+                                                                                        G4ThreeVector(0., 0., delta + z_height_Source_biggerBaseSiDet_inVerticale + distanza_tra_BaseInfScintillatore_e_BordoSuperioreDeiSiDetector + thickness_z_SupportoRame_SiDetector / 2),
+                                                                                        logic_Box_material_SupportoRame_PlasticScintUp, "logic_Box_material_SupportoRame_PlasticScintUp", // its fLogical volume
+                                                                                        fLogicWorld,                                                                                  // its mother volume
+                                                                                        false,                                                                                        // no boolean op.
+                                                                                        0);                                                                                           // copy nb.
+
+  logic_Box_material_SupportoRame_PlasticScintUp->SetVisAttributes(Copper);
+  
+
+  if (physics_Box_material_SupportoRame_PlasticScintUp == NULL)
+  {
+  }
+
+  G4double lenghtPlaccaCilidrica = fLength_PlasticScintillator - thickness_z_SupportoRame_SiDetector;
+
+  placcaRame_Cilindrica = new G4Tubs("placcaRame_Cilindrica", fRadius_PlasticScintillator, fRadius_PlasticScintillator + thickness_z_SupportoRame_PlasticScint, lenghtPlaccaCilidrica / 2, 0., 360 * deg);
+  G4LogicalVolume *logic_placcaRame_CilindricaUp = new G4LogicalVolume(placcaRame_Cilindrica, Cu, "placcaRame_CilindricaUp"); // solid, material, name
+  physics_placcaRame_CilindricaUp = new G4PVPlacement(0,                                                 // no rotation
+                                                                       G4ThreeVector(0., 0., delta + z_height_Source_biggerBaseSiDet_inVerticale + distanza_tra_BaseInfScintillatore_e_BordoSuperioreDeiSiDetector + thickness_z_SupportoRame_SiDetector + lenghtPlaccaCilidrica / 2),
+                                                                       logic_placcaRame_CilindricaUp, "logic_placcaRame_CilindricaUp", // its fLogical volume
+                                                                       fLogicWorld,                                                // its mother volume
+                                                                       false,                                                      // no boolean op.
+                                                                       0);
+
+  logic_placcaRame_CilindricaUp->SetVisAttributes(Copper);
+  if (physics_placcaRame_CilindricaUp == NULL)
+  {
+  }
+
+
+  ////////////////////LOWER///////////////////////////
+  G4LogicalVolume *fLogic_PlasticScintillatorLow = new G4LogicalVolume(fSolid_PlasticScintillator, fMaterial_PlasticScintillator, "PlasticScintillatorLow");                                                                                         // solid, material, name
+  fPhys_PlasticScintillatorLow = new G4PVPlacement(0,                                                                                                                                                                              // rotationMatrix
+                                                               G4ThreeVector(0., 0., -(z_height_Source_biggerBaseSiDet_inVerticale + distanza_tra_BaseInfScintillatore_e_BordoSuperioreDeiSiDetector + fLength_PlasticScintillator / 2)), // position
+                                                               fLogic_PlasticScintillatorLow, "PlasticScintillatorLow",                                                                                                                              // its fLogical volume
+                                                               fLogicWorld,                                                                                                                                                                    // its mother volume
+                                                               false,                                                                                                                                                                          // no boolean op.
+                                                               0);                                                                                                                                                                             // copy nb.
+  fLogic_PlasticScintillatorLow->SetVisAttributes(PlasticScintillator_att);
+
+  if (fPhys_PlasticScintillatorLow == NULL)
+  {
+  }
+
+  G4LogicalVolume *logic_Box_material_SupportoRame_PlasticScintLow = new G4LogicalVolume(Box_material_SupportoRame_PlasticScint, Cu, "logic_Box_material_SupportoRame_PlasticScintLow"); // solid, material, name
+  physics_Box_material_SupportoRame_PlasticScintLow = new G4PVPlacement(0,                                                                                         // no rotation
+                                                                                        G4ThreeVector(0., 0., -(z_height_Source_biggerBaseSiDet_inVerticale + distanza_tra_BaseInfScintillatore_e_BordoSuperioreDeiSiDetector + thickness_z_SupportoRame_SiDetector / 2)),
+                                                                                        logic_Box_material_SupportoRame_PlasticScintLow, "logic_Box_material_SupportoRame_PlasticScintLow", // its fLogical volume
+                                                                                        fLogicWorld,                                                                                  // its mother volume
+                                                                                        false,                                                                                        // no boolean op.
+                                                                                        0);                                                                                           // copy nb.
+
+  logic_Box_material_SupportoRame_PlasticScintLow->SetVisAttributes(Copper);
+  
+
+  if (physics_Box_material_SupportoRame_PlasticScintLow == NULL)
+  {
+  }
+
+  G4LogicalVolume *logic_placcaRame_CilindricaLow = new G4LogicalVolume(placcaRame_Cilindrica, Cu, "placcaRame_CilindricaLow"); // solid, material, name
+  physics_placcaRame_CilindricaLow = new G4PVPlacement(0,                                                 // no rotation
+                                                                       G4ThreeVector(0., 0., -(z_height_Source_biggerBaseSiDet_inVerticale + distanza_tra_BaseInfScintillatore_e_BordoSuperioreDeiSiDetector + thickness_z_SupportoRame_SiDetector + lenghtPlaccaCilidrica / 2)),
+                                                                       logic_placcaRame_CilindricaLow, "logic_placcaRame_CilindricaLow", // its fLogical volume
+                                                                       fLogicWorld,                                                // its mother volume
+                                                                       false,                                                      // no boolean op.
+                                                                       0);
+
+  logic_placcaRame_CilindricaLow->SetVisAttributes(Copper);
+  if (physics_placcaRame_CilindricaLow == NULL)
+  {
+  }
+
+  //////// SET SENSITIVE DETECTOR OTHER THAN SiDet and Catcher /////////
+  fLogic_PlasticScintillatorLow->SetSensitiveDetector(manager_ptr->GetWoodsSensor_PlasticScintillatorLow());
+  fLogic_PlasticScintillatorUp->SetSensitiveDetector(manager_ptr->GetWoodsSensor_PlasticScintillatorUp());
+
+
+
+
+  return fPhysiWorld;
+}
+
+void Woods_Detector::SetBFieldValue(G4double value)
+{
+  G4FieldManager *pFieldMgr;
+  // G4MagneticField *WoodsMagField = new WoodsMagnetField(GetInputNameB(), value); /// NON UNIFORM MAG FIELD GETFIELDVALUE method
+  G4MagneticField *WoodsMagField = new G4UniformMagField(G4ThreeVector(0., 0., value));
+  pFieldMgr = G4TransportationManager::GetTransportationManager()->GetFieldManager();
+  G4ChordFinder *pChordFinder = new G4ChordFinder(WoodsMagField);
+  pChordFinder->SetDeltaChord(1 * um);
+  pFieldMgr->SetChordFinder(pChordFinder);
+  pFieldMgr->SetDetectorField(WoodsMagField);
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+}
+
+void Woods_Detector::SetCatcherPosition_z(G4double value)
+{
+  phys_mother_catcher->SetTranslation(phys_mother_catcher->GetTranslation() + G4ThreeVector(0, 0, value));
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+}
+
+void Woods_Detector::SetCatcher_Thickness(G4double Al1_e, G4double Mylar_e, G4double Al2_e)
+{
+  G4int counter = 0;
+  G4double shift = 0;
+  G4double shift1 = 0;
+  G4double shift2 = 0;
+
+  if (Al1_e == -1.)
+  {
+    shift1 = 5*cm;
+    Al1_e = DBL_MIN;
+  }
   else
   {
-    G4Exception("Woods_Detector::SetSetup", "Wrong Setup Year (2021 or 2023)", JustWarning, "");
+    counter++;
+    Physics_AlSource1_central->SetCopyNo(counter);
   }
+  if (Mylar_e == -1.)
+  {
+    shift = 5*cm;
+    Mylar_e = DBL_MIN;
+  }
+  else
+  {
+    counter++;
+    Physics_MylarSource_central->SetCopyNo(counter);
+  }
+  if (Al2_e == -1.)
+  {
+    shift2 = 5*cm;
+    Al2_e = DBL_MIN;
+  }
+  else
+  {
+    counter++;
+    Physics_AlSource2_central->SetCopyNo(counter);
+  }
+
+    if (Catcher_Position == "catcher2")
+    {
+      Physics_AlSource1_central->SetTranslation(Physics_AlSource1_central->GetTranslation() + G4ThreeVector(0,shift1,-AlSource1 ->GetZHalfLength()+Al1_e/2));
+      AlSource1 ->SetZHalfLength(Al1_e/2);
+      G4RunManager::GetRunManager()->GeometryHasBeenModified();
+      
+      Physics_MylarSource_central->SetTranslation(Physics_AlSource1_central->GetTranslation() + G4ThreeVector(0,shift-shift1,Al1_e/2 + Mylar_e/2));
+      MylarSource_central->SetZHalfLength(Mylar_e/2);
+      G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
+      Physics_AlSource2_central->SetTranslation(Physics_MylarSource_central->GetTranslation() + G4ThreeVector(0,shift2-shift,Mylar_e/2 + Al2_e/2));
+      AlSource2 ->SetZHalfLength(Al2_e/2);
+    }
+
+    else if (Catcher_Position == "catcher1")
+    {
+      Physics_AlSource1_side->SetTranslation(Physics_AlSource1_side->GetTranslation() + G4ThreeVector(0,shift1,-AlSource1 ->GetZHalfLength()+Al1_e/2));
+      AlSource1 ->SetZHalfLength(Al1_e/2);
+      G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
+      Physics_MylarSource_side->SetTranslation(Physics_AlSource1_side->GetTranslation() + G4ThreeVector(0,shift-shift1,Al1_e/2 + Mylar_e/2));
+      MylarSource_side->SetZHalfLength(Mylar_e/2);
+      G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
+      Physics_AlSource2_side->SetTranslation(Physics_MylarSource_side->GetTranslation() + G4ThreeVector(0,shift2-shift-shift1,Mylar_e/2 + Al2_e/2));
+      AlSource2 ->SetZHalfLength(Al2_e/2);
+    }
+
+    else if (Catcher_Position == "source")
+    {
+      Physics_Source->SetTranslation(Physics_Source->GetTranslation() + G4ThreeVector(0, 0, 0));
+    }
+  
+}
+
+void Woods_Detector::SetCatcherPosition_theta(G4String position, G4double value)
+{
+  G4RotationMatrix *myRotation = new G4RotationMatrix();
+  myRotation->rotateX(0. * deg);
+  myRotation->rotateY(0. * deg);
+  Catcher_Position = position;
+
+  if (position == "source")
+  {
+    myRotation->rotateZ(30 * deg + value);
+  }
+  else if (position == "catcher2")
+  {
+    myRotation->rotateZ(value);
+  }
+  else if (position == "catcher1")
+  {
+    myRotation->rotateZ(-22.5 * deg + value);
+  }
+  else
+  {
+    G4Exception("Woods_Detector", ("Wrong Catcher position : " + position).c_str(), JustWarning, "");
+  }
+
+  phys_mother_catcher->SetRotation(myRotation);
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+}
+
+void Woods_Detector::SetDetector_Radius(G4double value)
+{
+  fSolid_PlasticScintillator->SetOuterRadius(value);
+  placcaRame_Cilindrica->SetInnerRadius(value);
+  placcaRame_Cilindrica->SetOuterRadius(value+thickness_z_SupportoRame_PlasticScint/2);
+
+  holeForPlasticScint->SetOuterRadius(value);
+  Box_material_SupportoRame_PlasticScint = new G4SubtractionSolid("Box_material_SupportoRame_PlasticScint",
+                                                                            bigBox_material_SupportoRame_PlasticScint, holeForPlasticScint,
+                                                                            0,
+                                                                            G4ThreeVector(0., 0., 0.));
+
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+}
+
+void Woods_Detector::SetDetector_Thickness(G4double value)
+{
+  fSolid_PlasticScintillator->SetZHalfLength(value/2);
+  fPhys_PlasticScintillatorUp->SetTranslation(fPhys_PlasticScintillatorUp->GetTranslation() + G4ThreeVector(0., 0., -(fLength_PlasticScintillator-value) / 2));
+  fPhys_PlasticScintillatorLow->SetTranslation(fPhys_PlasticScintillatorLow->GetTranslation() + G4ThreeVector(0., 0., (fLength_PlasticScintillator-value) / 2));
+
+  placcaRame_Cilindrica->SetZHalfLength(value/2);
+  physics_placcaRame_CilindricaUp->SetTranslation(physics_placcaRame_CilindricaUp->GetTranslation() + G4ThreeVector(0., 0., -(fLength_PlasticScintillator-value) / 2));
+  physics_placcaRame_CilindricaLow->SetTranslation(physics_placcaRame_CilindricaLow->GetTranslation() + G4ThreeVector(0., 0., (fLength_PlasticScintillator-value) / 2));
+
+
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+}
+    
+
+void Woods_Detector::SetDetector_Distance(G4double value)
+{
+  fPhys_PlasticScintillatorUp->SetTranslation(G4ThreeVector(0, 0, value+fSolid_PlasticScintillator->GetZHalfLength()));
+  fPhys_PlasticScintillatorLow->SetTranslation(G4ThreeVector(0, 0, -value-fSolid_PlasticScintillator->GetZHalfLength()));
+
+  physics_placcaRame_CilindricaUp->SetTranslation(G4ThreeVector(0, 0, value+placcaRame_Cilindrica->GetZHalfLength()));
+  physics_placcaRame_CilindricaLow->SetTranslation(G4ThreeVector(0, 0, -value-placcaRame_Cilindrica->GetZHalfLength()));
+
+  physics_Box_material_SupportoRame_PlasticScintLow->SetTranslation(G4ThreeVector(0, 0, -value-thickness_z_SupportoRame_PlasticScint/2));
+  physics_Box_material_SupportoRame_PlasticScintUp->SetTranslation(G4ThreeVector(0, 0, value+thickness_z_SupportoRame_PlasticScint/2));
+
 
   G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }

@@ -18,26 +18,15 @@ Woods_RunManager::Woods_RunManager()
 
   ////////////// Construct all sensors //////////////////////////////
   cout << "Constructor Woods_Sensor" << endl;
-  woods_sensor_PlasticScintillator = new Woods_Sensor;
-  for (int i = 0; i < nb_det; i++)
-  {
-    dic_detector[Detector_Code[i]] = std::make_pair(new Woods_Sensor, new Woods_Sensor);
-  }
+  woods_sensor_PlasticScintillatorUp = new Woods_Sensor;
+  woods_sensor_PlasticScintillatorLow = new Woods_Sensor;
+
   woods_sensor_CatcherMylar_central = new Woods_Sensor;
   woods_sensor_CatcherAl1_central = new Woods_Sensor;
   woods_sensor_CatcherAl2_central = new Woods_Sensor;
   woods_sensor_CatcherMylar_side = new Woods_Sensor;
   woods_sensor_CatcherAl1_side = new Woods_Sensor;
   woods_sensor_CatcherAl2_side = new Woods_Sensor;
-  ///////////////////////////////////////////////////////////////////
-
-  ////////////// Construct strips coinc/anticoinc HISTOGRAMS ////////
-  for (int i = 0; i < nb_det; i++)
-  {
-    histos_coinc[i] = new TH1D((Detector_Name[i] + "_coinc").c_str(), (Detector_Name[i] + "_coinc").c_str(), 100000, 0.0, 10000.0);
-    histos_nocoinc[i] = new TH1D((Detector_Name[i] + "_nocoinc").c_str(), (Detector_Name[i] + "_nocoinc").c_str(), 100000, 0.0, 10000.0);
-    histos_single[i] = new TH1D((Detector_Name[i] + "_single").c_str(), (Detector_Name[i] + "_single").c_str(), 100000, 0.0, 10000.0);
-  }
   ///////////////////////////////////////////////////////////////////
 }
 
@@ -50,12 +39,9 @@ Woods_RunManager::~Woods_RunManager()
   delete f;
 
   cout << "Destructor Woods_Sensor" << endl;
-  delete woods_sensor_PlasticScintillator;
-  for (int i = 0; i < nb_det; i++)
-  {
-    delete dic_detector[Detector_Code[i]].first;
-    delete dic_detector[Detector_Code[i]].second;
-  }
+  delete woods_sensor_PlasticScintillatorLow;
+  delete woods_sensor_PlasticScintillatorUp;
+
   delete woods_sensor_CatcherMylar_central;
   delete woods_sensor_CatcherAl1_central;
   delete woods_sensor_CatcherAl2_central;
@@ -101,18 +87,16 @@ void Woods_RunManager::AnalyzeEvent(G4Event *event)
     Tree->Branch("Initial_Kinetic_Energy", &Initial_Kinetic_Energy, "Initial_Kinetic_Energy/D");
     Tree->Branch("Catcher_Central_Deposit_Energy", &Catcher_Central_Deposit_Energy, "Catcher_Central_Deposit_Energy/D");
     Tree->Branch("Catcher_Side_Deposit_Energy", &Catcher_Side_Deposit_Energy, "Catcher_Side_Deposit_Energy/D");
-    Tree->Branch("PlasticScintillator_Deposit_Energy", &PlasticScintillator_Deposit_Energy, "PlasticScintillator_Deposit_Energy/D");
-    Tree->Branch("PlasticScintillator_Hit_Position_x", &PlasticScintillator_Hit_Position_x, "PlasticScintillator_Hit_Position_x/D");
-    Tree->Branch("PlasticScintillator_Hit_Position_y", &PlasticScintillator_Hit_Position_y, "PlasticScintillator_Hit_Position_y/D");
-    Tree->Branch("PlasticScintillator_Hit_Position_z", &PlasticScintillator_Hit_Position_z, "PlasticScintillator_Hit_Position_z/D");
-    Tree->Branch("PlasticScintillator_Hit_Angle", &PlasticScintillator_Hit_Angle, "PlasticScintillator_Hit_Angle/D");
-    Tree->Branch("Silicon_Detector_Deposit_Energy", &Silicon_Detector_Deposit_Energy);
-    Tree->Branch("Silicon_Detector_Hit_Position_x", &Silicon_Detector_Hit_Position_x);
-    Tree->Branch("Silicon_Detector_Hit_Position_y", &Silicon_Detector_Hit_Position_y);
-    Tree->Branch("Silicon_Detector_Hit_Position_z", &Silicon_Detector_Hit_Position_z);
-    Tree->Branch("Silicon_Detector_Hit_Angle", &Silicon_Detector_Hit_Angle);
-    Tree->Branch("Silicon_Detector_Code", &Silicon_Detector_Code);
-    Tree->Branch("Silicon_Detector_DL_Deposit_Energy", &Silicon_Detector_DL_Deposit_Energy);
+    Tree->Branch("PlasticScintillatorUp_Deposit_Energy", &PlasticScintillatorUp_Deposit_Energy, "PlasticScintillatorUp_Deposit_Energy/D");
+    Tree->Branch("PlasticScintillatorUp_Hit_Position_x", &PlasticScintillatorUp_Hit_Position_x, "PlasticScintillatorUp_Hit_Position_x/D");
+    Tree->Branch("PlasticScintillatorUp_Hit_Position_y", &PlasticScintillatorUp_Hit_Position_y, "PlasticScintillatorUp_Hit_Position_y/D");
+    Tree->Branch("PlasticScintillatorUp_Hit_Position_z", &PlasticScintillatorUp_Hit_Position_z, "PlasticScintillatorUp_Hit_Position_z/D");
+    Tree->Branch("PlasticScintillatorUp_Hit_Angle", &PlasticScintillatorUp_Hit_Angle, "PlasticScintillatorUp_Hit_Angle/D");
+    Tree->Branch("PlasticScintillatorLow_Deposit_Energy", &PlasticScintillatorLow_Deposit_Energy, "PlasticScintillatorLow_Deposit_Energy/D");
+    Tree->Branch("PlasticScintillatorLow_Hit_Position_x", &PlasticScintillatorLow_Hit_Position_x, "PlasticScintillatorLow_Hit_Position_x/D");
+    Tree->Branch("PlasticScintillatorLow_Hit_Position_y", &PlasticScintillatorLow_Hit_Position_y, "PlasticScintillatorLow_Hit_Position_y/D");
+    Tree->Branch("PlasticScintillatorLow_Hit_Position_z", &PlasticScintillatorLow_Hit_Position_z, "PlasticScintillatorLow_Hit_Position_z/D");
+    Tree->Branch("PlasticScintillatorLow_Hit_Angle", &PlasticScintillatorLow_Hit_Angle, "PlasticScintillatorLow_Hit_Angle/D");
     ///////////////////////////////////////////////////////////////////
   }
   // call the base class function (whatever it is supposed to do)
@@ -140,28 +124,19 @@ void Woods_RunManager::AnalyzeEvent(G4Event *event)
       Catcher_Central_Deposit_Energy = woods_sensor_CatcherMylar_central->GetDictionnary()[part].DepositEnergy + woods_sensor_CatcherAl1_central->GetDictionnary()[part].DepositEnergy + woods_sensor_CatcherAl2_central->GetDictionnary()[part].DepositEnergy;
       Catcher_Side_Deposit_Energy = woods_sensor_CatcherMylar_side->GetDictionnary()[part].DepositEnergy + woods_sensor_CatcherAl1_side->GetDictionnary()[part].DepositEnergy + woods_sensor_CatcherAl2_side->GetDictionnary()[part].DepositEnergy;
 
-      PrimaryInfo PlasticScintillator = woods_sensor_PlasticScintillator->GetDictionnary()[part];
-      PlasticScintillator_Deposit_Energy = PlasticScintillator.DepositEnergy;
-      PlasticScintillator_Hit_Position_x = PlasticScintillator.HitPosition.x();
-      PlasticScintillator_Hit_Position_y = PlasticScintillator.HitPosition.y();
-      PlasticScintillator_Hit_Position_z = PlasticScintillator.HitPosition.z();
-      PlasticScintillator_Hit_Angle = PlasticScintillator.HitAngle;
+      PrimaryInfo PlasticScintillatorUp = woods_sensor_PlasticScintillatorUp->GetDictionnary()[part];
+      PlasticScintillatorUp_Deposit_Energy = PlasticScintillatorUp.DepositEnergy;
+      PlasticScintillatorUp_Hit_Position_x = PlasticScintillatorUp.HitPosition.x();
+      PlasticScintillatorUp_Hit_Position_y = PlasticScintillatorUp.HitPosition.y();
+      PlasticScintillatorUp_Hit_Position_z = PlasticScintillatorUp.HitPosition.z();
+      PlasticScintillatorUp_Hit_Angle = PlasticScintillatorUp.HitAngle;
 
-      for (int i = 0; i < nb_det; i++)
-      {
-        PrimaryInfo dic_det = dic_detector[Detector_Code[i]].first->GetDictionnary()[part];
-        PrimaryInfo dic_dl = dic_detector[Detector_Code[i]].second->GetDictionnary()[part];
-        if (dic_detector[Detector_Code[i]].first->GetDictionnary()[part].DepositEnergy != 0)
-        {
-          Silicon_Detector_Code.push_back(Detector_Code[i]);
-          Silicon_Detector_Deposit_Energy.push_back(dic_det.DepositEnergy);
-          Silicon_Detector_Hit_Position_x.push_back(dic_det.HitPosition.x());
-          Silicon_Detector_Hit_Position_y.push_back(dic_det.HitPosition.y());
-          Silicon_Detector_Hit_Position_z.push_back(dic_det.HitPosition.z());
-          Silicon_Detector_Hit_Angle.push_back(dic_det.HitAngle);
-          Silicon_Detector_DL_Deposit_Energy.push_back(dic_dl.DepositEnergy);
-        }
-      }
+      PrimaryInfo PlasticScintillatorLow = woods_sensor_PlasticScintillatorLow->GetDictionnary()[part];
+      PlasticScintillatorLow_Deposit_Energy = PlasticScintillatorLow.DepositEnergy;
+      PlasticScintillatorLow_Hit_Position_x = PlasticScintillatorLow.HitPosition.x();
+      PlasticScintillatorLow_Hit_Position_y = PlasticScintillatorLow.HitPosition.y();
+      PlasticScintillatorLow_Hit_Position_z = PlasticScintillatorLow.HitPosition.z();
+      PlasticScintillatorLow_Hit_Angle = PlasticScintillatorLow.HitAngle;
       Tree->Fill();
     }
     
@@ -177,58 +152,17 @@ void Woods_RunManager::AnalyzeEvent(G4Event *event)
     Initial_Kinetic_Energy = 0;
     Catcher_Central_Deposit_Energy = 0;
     Catcher_Side_Deposit_Energy = 0;
-    PlasticScintillator_Deposit_Energy = 0;
-    PlasticScintillator_Hit_Position_x = 0;
-    PlasticScintillator_Hit_Position_y = 0;
-    PlasticScintillator_Hit_Position_z = 0;
-    PlasticScintillator_Hit_Angle = 0;
-    Silicon_Detector_Deposit_Energy.clear();
-    Silicon_Detector_Hit_Position_x.clear();
-    Silicon_Detector_Hit_Position_y.clear();
-    Silicon_Detector_Hit_Position_z.clear();
-    Silicon_Detector_Hit_Angle.clear();
-    Silicon_Detector_Code.clear();
-    Silicon_Detector_DL_Deposit_Energy.clear();
+    PlasticScintillatorUp_Deposit_Energy = 0;
+    PlasticScintillatorUp_Hit_Position_x = 0;
+    PlasticScintillatorUp_Hit_Position_y = 0;
+    PlasticScintillatorUp_Hit_Position_z = 0;
+    PlasticScintillatorUp_Hit_Angle = 0;
+    PlasticScintillatorLow_Deposit_Energy = 0;
+    PlasticScintillatorLow_Hit_Position_x = 0;
+    PlasticScintillatorLow_Hit_Position_y = 0;
+    PlasticScintillatorLow_Hit_Position_z = 0;
+    PlasticScintillatorLow_Hit_Angle = 0;
     ////////////////////////////////////////////////////////
-  }
-
-  // HISTOGRAMS ///#condition à revoir pour plus précis et générale
-  int index_delayed = -1;
-  int index_beta = -1;
-  for (int part = 1; part <= event->GetNumberOfPrimaryVertex(); part++)
-  {
-    G4int part_PDG = event->GetPrimaryVertex(part - 1)->GetPrimary()->GetG4code()->GetPDGEncoding();
-    if (part_PDG == -11 || part_PDG == 11)
-    {
-      index_beta = part;
-    }
-    if (part_PDG == 1000020040 || part_PDG == 2212)
-    {
-      if (index_beta != -1)
-      {
-        index_delayed = part;
-        break;
-      }
-    }
-  }
-
-  if (index_beta != -1 && index_delayed != -1)
-  {
-    for (int i = 0; i < nb_det; i++)
-    {
-      if (dic_detector[Detector_Code[i]].first->GetDictionnary()[index_delayed].DepositEnergy != 0.)
-      {
-        if (woods_sensor_PlasticScintillator->GetDictionnary()[index_beta].DepositEnergy >= GetThreshoold()/keV)
-        {
-          histos_coinc[i]->Fill(dic_detector[Detector_Code[i]].first->GetDictionnary()[index_delayed].DepositEnergy);
-        }
-        else
-        {
-          histos_nocoinc[i]->Fill(dic_detector[Detector_Code[i]].first->GetDictionnary()[index_delayed].DepositEnergy);
-        }
-        histos_single[i]->Fill(dic_detector[Detector_Code[i]].first->GetDictionnary()[index_delayed].DepositEnergy);
-      }
-    }
   }
 
   int divi = 10000;
@@ -237,21 +171,11 @@ void Woods_RunManager::AnalyzeEvent(G4Event *event)
   if (count % divi == 0)
   {
     Tree->AutoSave("FlushBaskets");
-
-    for (int i = 0; i < nb_det; i++)
-    {
-      histos_coinc[i]->Write("", TObject::kOverwrite);
-      histos_nocoinc[i]->Write("", TObject::kOverwrite);
-    }
   }
 
   ///// Reset all dictionnaries of detectors ///////////////////////
-  woods_sensor_PlasticScintillator->ResetDictionnary();
-  for (int i = 0; i < nb_det; i++)
-  {
-    dic_detector[Detector_Code[i]].first->ResetDictionnary();
-    dic_detector[Detector_Code[i]].second->ResetDictionnary();
-  }
+  woods_sensor_PlasticScintillatorLow->ResetDictionnary();
+  woods_sensor_PlasticScintillatorUp->ResetDictionnary();
   woods_sensor_CatcherMylar_central->ResetDictionnary();
   woods_sensor_CatcherAl1_central->ResetDictionnary();
   woods_sensor_CatcherAl2_central->ResetDictionnary();

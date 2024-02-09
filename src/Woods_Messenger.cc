@@ -70,12 +70,6 @@ void Woods_Messenger::DefineInputCommands()
   input_cmd_B->SetParameterName("B", false);
   input_cmd_B->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-  // Set Plastic Sintillator threshoold for histograms
-  input_cmd_th = new G4UIcmdWithAString("/Threshoold_PlasticScintillator", this);
-  input_cmd_th->SetGuidance("Set Threshoold PlasticScintillator");
-  input_cmd_th->SetParameterName("threshoold", false);
-  input_cmd_th->AvailableForStates(G4State_PreInit, G4State_Idle);
-
   // Set Ion Beam Size
   input_cmd_beam_size = new G4UIcmdWithAString("/Beam_Size", this);
   input_cmd_beam_size->SetGuidance("Set Beam Size");
@@ -87,12 +81,6 @@ void Woods_Messenger::DefineInputCommands()
   input_cmd_beam_position->SetGuidance("Set Beam Position");
   input_cmd_beam_position->SetParameterName("beam_position", false);
   input_cmd_beam_position->AvailableForStates(G4State_PreInit, G4State_Idle);
-
-  // Set Ion Beam position
-  input_cmd_dl_thickness = new G4UIcmdWithAString("/SiDeadLayer_Thickness", this);
-  input_cmd_dl_thickness->SetGuidance("Set Silicon Dead Layer Thickness");
-  input_cmd_dl_thickness->SetParameterName("dl_th", false);
-  input_cmd_dl_thickness->AvailableForStates(G4State_PreInit, G4State_Idle);
 
   // Set Catcher position z
   input_cmd_catcher_z = new G4UIcmdWithAString("/Catcher_Position_z", this);
@@ -112,11 +100,23 @@ void Woods_Messenger::DefineInputCommands()
   input_cmd_catcher_thickness->SetParameterName("catcher_thickness", false);
   input_cmd_catcher_thickness->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-  // Set Catcher Thickness
-  input_cmd_setup = new G4UIcmdWithAString("/Setup", this);
-  input_cmd_setup->SetGuidance("Setup Version");
-  input_cmd_setup->SetParameterName("year", false);
-  input_cmd_setup->AvailableForStates(G4State_PreInit, G4State_Idle);
+  // Set Detector Radius
+  input_cmd_detector_radius = new G4UIcmdWithAString("/Detector_radius", this);
+  input_cmd_detector_radius->SetGuidance("Set Detector Radius");
+  input_cmd_detector_radius->SetParameterName("detector_radius", false);
+  input_cmd_detector_radius->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  // Set Detector Thickness
+  input_cmd_detector_thickness = new G4UIcmdWithAString("/Detector_thickness", this);
+  input_cmd_detector_thickness->SetGuidance("Set Detector thickness");
+  input_cmd_detector_thickness->SetParameterName("detector_thikness", false);
+  input_cmd_detector_thickness->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  // Set Detector Distance
+  input_cmd_detector_distance = new G4UIcmdWithAString("/Detector_distance", this);
+  input_cmd_detector_distance->SetGuidance("Set Detector distance");
+  input_cmd_detector_distance->SetParameterName("detector_distance", false);
+  input_cmd_detector_distance->AvailableForStates(G4State_PreInit, G4State_Idle);
 
 }
 
@@ -196,14 +196,6 @@ void Woods_Messenger::SetNewValue(G4UIcommand *cmd, G4String args)
   {
     manager_ptr->SetOutputFilename(args);
   }
-  if (cmd == input_cmd_dl_thickness)
-  {
-    G4double value;
-    G4String unit;
-    std::istringstream iss(args);
-    iss >> value >> unit;
-    det_ptr->SetSiDeadLayer_Thickness(value * G4UnitDefinition::GetValueOf(unit));
-  }
   if (cmd == input_cmd_catcher_thickness)
   {
     G4double value, value1, value2;
@@ -225,14 +217,31 @@ void Woods_Messenger::SetNewValue(G4UIcommand *cmd, G4String args)
     }
     det_ptr->SetCatcher_Thickness(value * G4UnitDefinition::GetValueOf(unit), value1 * G4UnitDefinition::GetValueOf(unit), value2 * G4UnitDefinition::GetValueOf(unit));
   }
-  if (cmd == input_cmd_setup)
+
+  if(cmd == input_cmd_detector_radius)
   {
-    G4int value;
+    G4double value;
+    G4String unit;
     std::istringstream iss(args);
-    iss >> value;
-    det_ptr->SetSetup(value);
-    Version = value;
-    // gen_ptr->SetSetup(value);
-    // manager_ptr->SetSetup(value)
+    iss >> value >> unit;
+    det_ptr->SetDetector_Radius(value * G4UnitDefinition::GetValueOf(unit));
+  }
+
+  if(cmd == input_cmd_detector_thickness)
+  {
+    G4double value;
+    G4String unit;
+    std::istringstream iss(args);
+    iss >> value >> unit;
+    det_ptr->SetDetector_Thickness(value * G4UnitDefinition::GetValueOf(unit));
+  }
+
+  if (cmd == input_cmd_detector_distance)
+  {
+    G4double value;
+    G4String unit;
+    std::istringstream iss(args);
+    iss >> value >> unit;
+    det_ptr->SetDetector_Distance(value * G4UnitDefinition::GetValueOf(unit));
   }
 }
