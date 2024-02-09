@@ -1,0 +1,244 @@
+#!/bin/bash
+
+rootCRADLEfile=../../../data333/lecanuet/data/
+rootGeant4file=../../../data333/lecanuet/Result/
+
+rootCRADLEfile=../../../../../../mnt/hgfs/shared-2/data/
+rootGeant4file=../../../../../../mnt/hgfs/shared-2/
+
+suffixe="_CALIB"
+
+rm -rf tempory/*
+
+usage() {
+  echo "Usage: $0 [OPTIONS]"
+  echo "Options:"
+  echo "  nucleus=        Specify the nucleus (nucleus=32Ar)"
+  echo "  N=              Specify the value of number of simulation"
+  echo "  n=              Specify the value of number of simultaneous simulation"
+  echo "  events=         Specify the number of events"
+  echo "  CV=             Specify the value of CV."
+  echo "  CS=             Specify the value of CS."
+  echo "  CVP=            Specify the value of CV'."
+  echo "  CSP=            Specify the value of CS'."
+  echo "  CA=             Specify the value of CA."
+  echo "  CAP=            Specify the value of CA'."
+  echo "  CT=             Specify the value of CT."
+  echo "  CTP=            Specify the value of CT'."
+  echo "  a=              Specify the value of a."
+  echo "  b=              Specify the value of b."
+  echo "  --help          Show this help message."
+  exit 1
+}
+
+RED="\e[1;31m"
+GREEN="\e[1;32m"
+YELLOW="\e[1;33m"
+COLOR="\e[0m"
+
+FERMI_change=false
+GT_change=false
+a_change=false
+b_change=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    nucleus=*)
+      Nuclei="${1#*=}"
+      ;;
+    N=*)
+      N="${1#*=}"
+      ;;
+    n=*)
+      n="${1#*=}"
+      ;;
+    events=*)
+      events="${1#*=}"
+      ;;
+    CV=*)
+      CV="${1#*=}"
+      FERMI_change=true
+      ;;
+    CS=*)
+      CS="${1#*=}"
+      FERMI_change=true
+      ;;
+    CVP=*)
+      CVP="${1#*=}"
+      FERMI_change=true
+      ;;
+    CSP=*)
+      CSP="${1#*=}"
+      FERMI_change=true
+      ;;
+    CA=*)
+      CA="${1#*=}"
+      GT_change=true
+      ;;
+    CT=*)
+      CT="${1#*=}"
+      GT_change=true
+      ;;
+    CAP=*)
+      CAP="${1#*=}"
+      GT_change=true
+      ;;
+    CTP=*)
+      CTP="${1#*=}"
+      GT_change=true
+      ;;
+    a=*)
+      a="${1#*=}"
+      a_change=true
+      ;;
+    b=*)
+      b="${1#*=}"
+      b_change=true
+      ;;
+    --help)
+      usage
+      ;;
+    *)
+      echo "Argument inconnu : $1"
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+###default value
+DEFAULT_CV=1
+DEFAULT_CVP=1
+DEFAULT_CS=0
+DEFAULT_CSP=0
+
+DEFAULT_CA=1.27
+DEFAULT_CAP=1.27
+DEFAULT_CT=0
+DEFAULT_CTP=0
+
+DEFAULT_a=1
+DEFAULT_b=0
+
+DEFAULT_N=3
+DEFAULT_n=1
+
+DEFAULT_events=1000000
+
+###Fermi
+CV=${CV:-$DEFAULT_CV}
+CVP=${CVP:-$DEFAULT_CVP}
+CS=${CS:-$DEFAULT_CS}
+CSP=${CSP:-$DEFAULT_CSP}
+###Gamow-Teller
+CA=${CA:-$DEFAULT_CA}
+CAP=${CAP:-$DEFAULT_CAP}
+CT=${CT:-$DEFAULT_CT}
+CTP=${CTP:-$DEFAULT_CTP}
+
+a=${a:-$DEFAULT_a}
+b=${b:-$DEFAULT_b}
+
+nProcess=${n:-$DEFAULT_n}
+RunEnd=${N:-$DEFAULT_N}
+
+events=${events:-$DEFAULT_events}
+
+
+if [ "$a_change" == true ] || [ "$b_change" == true ]; then
+  constants="a${a}_b${b}"
+  replace="s/%CS/${CS}/g; s/%CPS/${CSP}/g; s/%CV/${CV}/g; s/%CPV/${CVP}/g; s/%CA/${CA}/g; s/%CPA/${CAP}/g; s/%CT/${CT}/g; s/%CPT/${CTP}/g; s/%a/${a}/g; s/%b/${b}/g"
+else
+  replace="s/%CS/${CS}/g; s/%CPS/${CSP}/g; s/%CV/${CV}/g; s/%CPV/${CVP}/g; s/%CA/${CA}/g; s/%CPA/${CAP}/g; s/%CT/${CT}/g; s/%CPT/${CTP}/g; s/%a/NaN/g; s/%b/NaN/g"
+fi
+
+
+if $FERMI_change && ! $GT_change; then
+  constants="CS${CS}_CSP${CSP}_CV${CV}_CVP${CVP}"
+fi 
+if ! $FERMI_change && $GT_change; then
+  constants="CA${CA}_CAP${CAP}_CT${CT}_CTP${CTP}"
+fi
+if $FERMI_change && $GT_change; then
+  constants="CA${CA}_CAP${CAP}_CT${CT}_CTP${CTP}_CS${CS}_CSP${CSP}_CV${CV}_CVP${CVP}"
+fi
+
+
+list_nuclei=("H" "He" "Li" "Be" "B" "C" "N" "O" "F" "Ne" "Na" "Mg" "Al" "Si" "P" "S" "Cl" "Ar" "K" "Ca" "Sc" "Ti" "V" "Cr" "Mn" "Fe" "Co" "Ni" "Cu" "Zn" "Ga" "Ge" "As" "Se" "Br" "Kr" "Rb" "Sr" "Y" "Zr" "Nb" "Mo" "Tc" "Ru" "Rh" "Pd" "Ag" "Cd" "In" "Sn" "Sb" "Te" "I" "Xe" "Cs" "Ba" "La" "Ce" "Pr" "Nd" "Pm" "Sm" "Eu" "Gd" "Tb" "Dy" "Ho" "Er" "Tm" "Yb" "Lu" "Hf" "Ta" "W" "Re" "Os" "Ir" "Pt" "Au" "Hg" "Tl" "Pb" "Bi" "Po" "At" "Rn" "Fr" "Ra" "Ac" "Th" "Pa" "U" "Np" "Pu" "Am" "Cm" "Bk" "Cf" "Es" "Fm" "Md" "No" "Lr" "Rf" "Db" "Sg" "Bh" "Hs" "Mt")
+declare -A nucleus_Z
+for ((i=1; i<${#list_nuclei[@]}+1; i++)); do
+    nucleus_Z[${list_nuclei[$i-1]}]=$i
+done
+Nucleus=$(echo "$Nuclei" | sed -n 's/.*\([A-Z][a-z]*\)$/\1/p')
+if [[ -n ${nucleus_Z[$Nucleus]} ]]; then
+    Z=${nucleus_Z[$Nucleus]}
+fi
+A=$(echo "$Nuclei" | sed 's/[^0-9]*//g')
+
+echo -e "$RED"
+rm -vf "LOG/During_$Nuclei.txt"
+echo -e "$COLOR"
+
+TimeStart=$SECONDS
+
+RunStart=1
+TH=()
+THRun=()
+Saver=0
+RunN=$(($RunStart+$nProcess))
+TimeCheck=10 # in seconds
+
+Saver=$RunStart
+i=0
+
+while [ $Saver -le $RunEnd ]; do
+    th=${TH[i]}
+    run=${THRun[i]}
+    kill -0 $th
+    if [ $? -ne 0 ]
+	  then
+        TimeCurrent=$SECONDS
+        DureeCurrent=$(($TimeCurrent-$TimeStart))
+        SecondCurrent=$(printf "%02d" "$(($DureeCurrent%60))")
+        MinuteCurrent=$(printf "%02d" "$((($DureeCurrent/60)%60))")
+        HeureCurrent=$(printf "%02d" "$((($DureeCurrent/3600)%24))")
+        JourCurrent=$(printf "%d" "$((($DureeCurrent/(3600*24))))")
+        RunKilled=$run
+        
+        if [[ $Saver -gt $RunN ]]; then
+            echo "Duree Run $RunKilled : ${JourCurrent}j:${HeureCurrent}h:${MinuteCurrent}m:${SecondCurrent}s" >> "LOG/During_$Nuclei.txt"
+        fi
+
+	      cd ../CRADLE-master/build
+        cp ../config/config_base.txt config_${constants}_bis.txt
+        sed -e "$replace" config_${constants}_bis.txt > ../config/config_${constants}.txt
+        rm config_${constants}_bis.txt
+        #./CRADLE++ nucleus --name ${Nuclei} -Z $Z -A $A -c ../config/config_${constants}.txt general -l ${events} -o ${rootCRADLEfile}${Nuclei}${suffixe}_${constants}_${Saver}.root
+        cd -
+
+        cp macro_base.mac tempory/macro_${Saver}_${Nuclei}${suffixe}_${constants}_bis.mac
+        sed -e "s|%inputCRADLE|../${rootCRADLEfile}${Nuclei}${suffixe}_${constants}_${Saver}.root|g; s/%inputSRIM/AlMylar_2021_${Nuclei}.txt/g; s|%output|${rootGeant4file}${Nuclei}${suffixe}_${constants}_${Saver}.root|g; s/%events/${events}/g" tempory/macro_${Saver}_${Nuclei}${suffixe}_${constants}_bis.mac > tempory/macro_${Saver}_${Nuclei}${suffixe}_${constants}.mac
+        rm tempory/macro_${Saver}_${Nuclei}${suffixe}_${constants}_bis.mac
+        woods tempory/macro_${Saver}_${Nuclei}${suffixe}_${constants}.mac &
+        echo -e "$GREEN woods tempory/macro_${Saver}_${Nuclei}${suffixe}_${constants}.mac $COLOR"
+
+        TH[$i]=${!}
+        THRun[$i]=$Saver
+        Saver=$(($Saver+1))
+    fi
+    i=$(($i+1))
+    if [ $i -eq $nProcess ]; then
+        i=0
+        sleep $TimeCheck
+    fi
+done
+
+wait
+TimeEnd=$SECONDS
+
+Duree=$(($TimeEnd-$TimeStart))
+Second=$(printf "%02d" "$(($Duree%60))")
+Minute=$(printf "%02d" "$((($Duree/60)%60))")
+Heure=$(printf "%02d" "$((($Duree/3600)%24))")
+Jour=$(printf "%d" "$((($Duree/(3600*24))))")
+echo -e "$RED Duree total : ${Jour}"

@@ -1,0 +1,38 @@
+#---------------------------------------------------------------
+#   Verbosity
+#---------------------------------------------------------------
+/run/initialize
+/run/verbose      0
+/event/verbose    0
+/tracking/verbose 0
+
+#---------------------------------------------------------------
+#   Input Files
+#---------------------------------------------------------------
+#/input/Open_B MAGNETIC_FIELD_data/woods_field.txt
+/input/Open_SRIM SRIM_data/AlMylar_32Ar.txt
+/input/Open_CRADLE CRADLE_data/SAMPLE.root
+
+#---------------------------------------------------------------
+#   Simulation Parameters
+#---------------------------------------------------------------
+/Magnetic_Field 4 T
+/Threshoold_PlasticScintillator 100 keV
+
+#---------------------------------------------------------------
+#   Systematic Variables
+#---------------------------------------------------------------
+/Beam_Size 2 mm 300 um
+/Beam_Position 0 cm 0 cm
+
+/Setup 2023
+/Catcher_Position_z 0 mm
+/Catcher_Position catcher2 0 deg     position:[source / catcher2 / catcher1] #delta angle(degree)
+/Catcher_Thickness 50 500 50 nm     thickness : Al, Mylar Al (0 delete it)
+
+#---------------------------------------------------------------
+#   Generate Events
+#---------------------------------------------------------------
+/run/printProgress 10000
+/output SAMPLE.root
+/run/beamOn 20000
