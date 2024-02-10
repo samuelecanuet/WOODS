@@ -10,30 +10,31 @@
 #   Input Files
 #---------------------------------------------------------------
 #/input/Open_B MAGNETIC_FIELD_data/woods_field.txt
-/input/Open_SRIM SRIM_data/AlMylar_2021_32Ar.txt
-/input/Open_CRADLE ../../../../../../../mnt/hgfs/shared-2/data/32Ar_CALIB_CS0_CSP0_CV1_CVP1_5.root
+/input/Open_SRIM SRIM_data/AlMylar_14O.txt
+/input/Open_CRADLE ../../../../../../../mnt/hgfs/shared-2/data/14O_CS0_CSP0_CV1_CVP1_2.root
 
 #---------------------------------------------------------------
 #   Simulation Parameters
 #---------------------------------------------------------------
 /Magnetic_Field 4 T
-/Threshoold_PlasticScintillator 100 keV
+/Detector_thickness 2.5 cm  #1cm
+/Detector_radius 2.5 cm
+/Detector_distance 10.05 cm
+/Detector_material G4_PLASTIC_SC_VINYLTOLUENE #G4_PLASTIC_SC_VINYLTOLUENE #G4_SI
 
 #---------------------------------------------------------------
 #   Systematic Variables
 #---------------------------------------------------------------
-/SiDeadLayer_Thickness 100 nm
 /Beam_Size 2 mm 300 um
 /Beam_Position 0 cm 0 cm
 
-/Setup 2021
 /Catcher_Position_z 0 mm
 /Catcher_Position catcher2 0 deg     position:[source / catcher2 / catcher1] #delta angle(degree)
-/Catcher_Thickness 0 6000 0 nm     thickness : Al, Mylar Al (0 delete it)
+/Catcher_Thickness 100 500 0 nm     thickness : Al, Mylar Al (0 delete it)
 
 #---------------------------------------------------------------
 #   Generate Events
 #---------------------------------------------------------------
 /run/printProgress 10000
-/output ../../../../../../mnt/hgfs/shared-2/32Ar_CALIB_CS0_CSP0_CV1_CVP1_5.root
+/output ../../../../../../mnt/hgfs/shared-2/14O_CS0_CSP0_CV1_CVP1_2.root
 /run/beamOn 1000000

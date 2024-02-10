@@ -177,18 +177,18 @@ void Woods_Generator::ROOT_GENERATOR(G4Event *event)
       dir[1] = **py;
       dir[2] = **pz;
 
-      // gun.SetParticleDefinition(particle_table->FindParticle(**code));
-      // gun.SetParticlePosition(G4ThreeVector(x, y, z));
-      // gun.SetParticleMomentumDirection(dir);
-      // gun.SetParticleEnergy(**ekin_* keV);
-      // gun.GeneratePrimaryVertex(event);
+      gun.SetParticleDefinition(particle_table->FindParticle(**code));
+      gun.SetParticlePosition(G4ThreeVector(x, y, z));
+      gun.SetParticleMomentumDirection(dir);
+      gun.SetParticleEnergy(**ekin_* keV);
+      gun.GeneratePrimaryVertex(event);
 
       //////////FOR TEST/////////
-         gun.SetParticleDefinition        ( part_geantino );
-         gun.SetParticlePosition          ( G4ThreeVector (x, y, 0*nm)  );
-         gun.SetParticleMomentumDirection ( G4ThreeVector(0.,0.,-1.) );
-         gun.SetParticleEnergy            ( **ekin_*keV );
-         gun.GeneratePrimaryVertex        ( event );
+        //  gun.SetParticleDefinition        ( part_gamma );
+        //  gun.SetParticlePosition          ( G4ThreeVector (x, y, 0*nm)  );
+        //  gun.SetParticleMomentumDirection ( G4ThreeVector(0.,0.,-1.) );
+        //  gun.SetParticleEnergy            ( **ekin_*keV );
+        //  gun.GeneratePrimaryVertex        ( event );
     }
   }
   (*Reader).SetEntry((*Reader).GetCurrentEntry() - 1);

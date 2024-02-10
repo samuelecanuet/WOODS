@@ -77,6 +77,7 @@ public:
   void SetDetector_Radius(G4double radius);
   void SetDetector_Thickness(G4double thickness);
   void SetDetector_Distance(G4double distance);
+  void SetDetector_Material(G4String material);
   G4Tubs *MylarSource;
   G4Tubs *AlSource1;
   G4Tubs *AlSource2;
@@ -149,11 +150,14 @@ public:
   G4VPhysicalVolume *physics_placcaRame_CilindricaLow;
   G4VPhysicalVolume *physics_Box_material_SupportoRame_PlasticScintUp;
   G4VPhysicalVolume *physics_Box_material_SupportoRame_PlasticScintLow;
+  G4LogicalVolume *fLogic_PlasticScintillatorLow;
+  G4LogicalVolume *fLogic_PlasticScintillatorUp;
 
   G4Tubs *holeForPlasticScint;
   G4VSolid *Box_material_SupportoRame_PlasticScint;
   G4VSolid *bigBox_material_SupportoRame_PlasticScint;
   G4double thickness_z_SupportoRame_PlasticScint = 1.5 * mm;
+
 
 
   G4Tubs *fSolid_PlasticScintillator;

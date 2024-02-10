@@ -118,6 +118,12 @@ void Woods_Messenger::DefineInputCommands()
   input_cmd_detector_distance->SetParameterName("detector_distance", false);
   input_cmd_detector_distance->AvailableForStates(G4State_PreInit, G4State_Idle);
 
+  // Set Detector Material
+  input_cmd_detector_material = new G4UIcmdWithAString("/Detector_material", this);
+  input_cmd_detector_material->SetGuidance("Set Detector material");
+  input_cmd_detector_material->SetParameterName("detector_material", false);
+  input_cmd_detector_material->AvailableForStates(G4State_PreInit, G4State_Idle);
+
 }
 
 //----------------------------------------------------------------------
@@ -243,5 +249,10 @@ void Woods_Messenger::SetNewValue(G4UIcommand *cmd, G4String args)
     std::istringstream iss(args);
     iss >> value >> unit;
     det_ptr->SetDetector_Distance(value * G4UnitDefinition::GetValueOf(unit));
+  }
+
+  if (cmd == input_cmd_detector_material)
+  {
+    det_ptr->SetDetector_Material(args);
   }
 }

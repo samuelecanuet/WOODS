@@ -62,6 +62,7 @@ class Woods_Messenger : public G4UImessenger
   G4UIcmdWithAString *input_cmd_detector_radius;
   G4UIcmdWithAString *input_cmd_detector_thickness;
   G4UIcmdWithAString *input_cmd_detector_distance;
+  G4UIcmdWithAString *input_cmd_detector_material;
 
   G4int Version;
   //------------------------------------------------------------

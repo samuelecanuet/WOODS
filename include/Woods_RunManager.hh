@@ -35,6 +35,8 @@ protected:
   Woods_Sensor *woods_sensor_CatcherAl2_side;
 
   G4double x, y, z, px, py, pz, Initial_Kinetic_Energy, Catcher_Central_Deposit_Energy, Catcher_Side_Deposit_Energy, PlasticScintillatorUp_Deposit_Energy, PlasticScintillatorUp_Hit_Position_x, PlasticScintillatorUp_Hit_Position_y, PlasticScintillatorUp_Hit_Position_z, PlasticScintillatorUp_Hit_Angle, PlasticScintillatorLow_Deposit_Energy, PlasticScintillatorLow_Hit_Position_x, PlasticScintillatorLow_Hit_Position_y, PlasticScintillatorLow_Hit_Position_z, PlasticScintillatorLow_Hit_Angle;
+  G4int PlasticScintillatorUp_BackScattering_Number, PlasticScintillatorLow_BackScattering_Number, PlasticScintillatorUp_AnnihilationCounter, PlasticScintillatorLow_AnnihilationCounter;
+  vector<G4double> PlasticScintillatorUp_Hit_KineticEnergy, PlasticScintillatorLow_Hit_KineticEnergy;
   G4int Particle_PDG;
   std::vector<std::string> Silicon_Detector_Name;
   std::vector<int> Silicon_Detector_Code;
@@ -100,6 +102,21 @@ public:
 
   // redefine the function from base class G4RunManager
   void AnalyzeEvent(G4Event *event);
+
+  ////////////// Construct Histograms //////////////////////////////
+    TDirectory *dirUp;
+    TDirectory *dirLow;
+    TH1D *EnergyDepositUp;
+    TH1D *EnergyDepositLow;
+    TH1D *EnergyDepositUp_Beta;
+    TH1D *EnergyDepositLow_Beta;
+    TH1D *EnergyDepositUp_Gamma;
+    TH1D *EnergyDepositLow_Gamma;
+    TH1I * BackScatteringMultiplicityUp;
+    TH1I * BackScatteringMultiplicityLow;
+    TH1I * AnnihilationMultiplicityUp;
+    TH1I * AnnihilationMultiplicityLow;
+  //////////////////////////////////////////////////////////////////
 };
 
 //----------------------------------------------------------------------

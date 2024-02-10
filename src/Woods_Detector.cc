@@ -83,7 +83,7 @@ G4VPhysicalVolume *Woods_Detector::Construct()
                                   "World",         // its name
                                   0,               // its mother  volume
                                   false,           // no boolean operation
-                                  0);              // copy number
+                                  -1);              // copy number
 
   G4VisAttributes *visAtt_World = new G4VisAttributes(G4Colour(1, 1, 1)); // white
   visAtt_World->SetVisibility(false);
@@ -541,12 +541,13 @@ G4VPhysicalVolume *Woods_Detector::Construct()
 
   fSolid_PlasticScintillator = new G4Tubs("PlasticScintillator", 0., fRadius_PlasticScintillator, 0.5 * fLength_PlasticScintillator, 0., 360 * deg);   
                                                                                   // name, r : 0->1cm, L : 5cm, phi : 0->2pi
-  G4LogicalVolume *fLogic_PlasticScintillatorUp = new G4LogicalVolume(fSolid_PlasticScintillator, fMaterial_PlasticScintillator, "PlasticScintillator");                                                                                         // solid, material, name
+  fLogic_PlasticScintillatorUp = new G4LogicalVolume(fSolid_PlasticScintillator, fMaterial_PlasticScintillator, "PlasticScintillator");                                                                                         // solid, material, name
   fPhys_PlasticScintillatorUp = new G4PVPlacement(0,                                                                                                                                                                              // rotationMatrix
                                                                G4ThreeVector(0., 0., z_height_Source_biggerBaseSiDet_inVerticale + distanza_tra_BaseInfScintillatore_e_BordoSuperioreDeiSiDetector + fLength_PlasticScintillator / 2 + delta), // position
                                                                fLogic_PlasticScintillatorUp, "PlasticScintillatorUp",                                                                                                                              // its fLogical volume
                                                                fLogicWorld,                                                                                                                                                                    // its mother volume
                                                                false,                                                                                                                                                                          // no boolean op.
+                                                               98,
                                                                0);                                                                                                                                                                             // copy nb.
   G4VisAttributes *PlasticScintillator_att = new G4VisAttributes(G4Colour(0.6, 0.6, 0.6, 0.6));                                                                                                                                                // red
   PlasticScintillator_att->SetForceWireframe(false);
@@ -602,12 +603,13 @@ G4VPhysicalVolume *Woods_Detector::Construct()
 
 
   ////////////////////LOWER///////////////////////////
-  G4LogicalVolume *fLogic_PlasticScintillatorLow = new G4LogicalVolume(fSolid_PlasticScintillator, fMaterial_PlasticScintillator, "PlasticScintillatorLow");                                                                                         // solid, material, name
+  fLogic_PlasticScintillatorLow = new G4LogicalVolume(fSolid_PlasticScintillator, fMaterial_PlasticScintillator, "PlasticScintillatorLow");                                                                                         // solid, material, name
   fPhys_PlasticScintillatorLow = new G4PVPlacement(0,                                                                                                                                                                              // rotationMatrix
                                                                G4ThreeVector(0., 0., -(z_height_Source_biggerBaseSiDet_inVerticale + distanza_tra_BaseInfScintillatore_e_BordoSuperioreDeiSiDetector + fLength_PlasticScintillator / 2)), // position
                                                                fLogic_PlasticScintillatorLow, "PlasticScintillatorLow",                                                                                                                              // its fLogical volume
                                                                fLogicWorld,                                                                                                                                                                    // its mother volume
                                                                false,                                                                                                                                                                          // no boolean op.
+                                                               99,
                                                                0);                                                                                                                                                                             // copy nb.
   fLogic_PlasticScintillatorLow->SetVisAttributes(PlasticScintillator_att);
 
@@ -815,5 +817,13 @@ void Woods_Detector::SetDetector_Distance(G4double value)
   physics_Box_material_SupportoRame_PlasticScintUp->SetTranslation(G4ThreeVector(0, 0, value+thickness_z_SupportoRame_PlasticScint/2));
 
 
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+}
+
+void Woods_Detector::SetDetector_Material(G4String mat)
+{
+  G4Material *material = G4NistManager::Instance()->FindOrBuildMaterial(mat);
+  fLogic_PlasticScintillatorUp->SetMaterial(material);
+  fLogic_PlasticScintillatorLow->SetMaterial(material);
   G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }

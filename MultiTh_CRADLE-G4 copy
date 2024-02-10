@@ -6,8 +6,6 @@ rootGeant4file=../../../data333/lecanuet/Result/
 rootCRADLEfile=../../../../../../mnt/hgfs/shared-2/data/
 rootGeant4file=../../../../../../mnt/hgfs/shared-2/
 
-suffixe=""
-
 rm -rf tempory/*
 
 usage() {
@@ -27,6 +25,10 @@ usage() {
   echo "  CTP=            Specify the value of CT'."
   echo "  a=              Specify the value of a."
   echo "  b=              Specify the value of b."
+  echo "  B=              Specify the value of the magnetic field."
+  echo "  material=       Specify the detector material."
+  echo "  distance=       Specify the distance between the catcher and the detector."
+  echo "  radius=         Specify the radius of the detector."
   echo "  --help          Show this help message."
   exit 1
 }
@@ -95,6 +97,18 @@ while [[ $# -gt 0 ]]; do
       b="${1#*=}"
       b_change=true
       ;;
+    material=*)
+      material="${1#*=}"
+      ;;
+    distance=*)
+      distance="${1#*=}"
+      ;;
+    radius=*)
+      radius="${1#*=}"
+      ;;
+    B=*)
+      B="${1#*=}"
+      ;;
     --help)
       usage
       ;;
@@ -125,6 +139,11 @@ DEFAULT_n=1
 
 DEFAULT_events=1000000
 
+DEFAULT_distance=5.05
+DEFAULT_material="G4_PLASTIC_SC_VINYLTOLUENE"
+DEFAULT_radius=2.5
+DEFAULT_B=4
+
 ###Fermi
 CV=${CV:-$DEFAULT_CV}
 CVP=${CVP:-$DEFAULT_CVP}
@@ -144,6 +163,17 @@ RunEnd=${N:-$DEFAULT_N}
 
 events=${events:-$DEFAULT_events}
 
+distance=${distance:-$DEFAULT_distance}
+material=${material:-$DEFAULT_material}
+radius=${radius:-$DEFAULT_radius}
+B=${B:-$DEFAULT_B}
+if ["$material" == "G4_PLASTIC_SC_VINYLTOLUENE"]; then
+  thickness=2.5
+else
+  thickness=1
+fi
+
+parameter="D=${distance}_${material}_R=${radius}_B=${B}"
 
 if [ "$a_change" == true ] || [ "$b_change" == true ]; then
   constants="a${a}_b${b}"
@@ -213,14 +243,22 @@ while [ $Saver -le $RunEnd ]; do
         cp ../config/config_base.txt config_${constants}_bis.txt
         sed -e "$replace" config_${constants}_bis.txt > ../config/config_${constants}.txt
         rm config_${constants}_bis.txt
-        ./CRADLE++ nucleus --name ${Nuclei} -Z $Z -A $A -c ../config/config_${constants}.txt general -l ${events} -o ${rootCRADLEfile}${Nuclei}${suffixe}_${constants}_${Saver}.root
+        ./CRADLE++ nucleus --name ${Nuclei} -Z $Z -A $A -c ../config/config_${constants}.txt general -l ${events} -o ${rootCRADLEfile}${Nuclei}_${constants}_${Saver}.root
         cd -
 
-        cp macro_base.mac tempory/macro_${Saver}_${Nuclei}${suffixe}_${constants}_bis.mac
-        sed -e "s|%inputCRADLE|../${rootCRADLEfile}${Nuclei}${suffixe}_${constants}_${Saver}.root|g; s/%inputSRIM/AlMylar_${Nuclei}.txt/g; s|%output|${rootGeant4file}${Nuclei}${suffixe}_${constants}_${Saver}.root|g; s/%events/${events}/g" tempory/macro_${Saver}_${Nuclei}${suffixe}_${constants}_bis.mac > tempory/macro_${Saver}_${Nuclei}${suffixe}_${constants}.mac
-        rm tempory/macro_${Saver}_${Nuclei}${suffixe}_${constants}_bis.mac
-        woods tempory/macro_${Saver}_${Nuclei}${suffixe}_${constants}.mac &
-        echo -e "$GREEN woods tempory/macro_${Saver}_${Nuclei}${suffixe}_${constants}.mac $COLOR"
+        cp macro_base.mac tempory/macro_${Saver}_${Nuclei}${paramater}_${constants}_bis.mac
+        sed -e "s|%inputCRADLE|../${rootCRADLEfile}${Nuclei}_${constants}_${Saver}.root|g; 
+                s/%inputSRIM/AlMylar_${Nuclei}.txt/g; s|%output|${rootGeant4file}${Nuclei}${paramater}_${constants}_${Saver}.root|g; 
+                s/%events/${events}/g
+                s/%distance/${distance}/g; 
+                s/%B/${B}/g;
+                s/thickness/${thickness}/g;
+                s/%material/${material}/g; 
+                s/%radius/${radius}/g"
+                tempory/macro_${Saver}_${Nuclei}${paramater}_${constants}_bis.mac > tempory/macro_${Saver}_${Nuclei}${paramater}_${constants}.mac
+        rm tempory/macro_${Saver}_${Nuclei}${paramater}_${constants}_bis.mac
+        woods tempory/macro_${Saver}_${Nuclei}${paramater}_${constants}.mac &
+        echo -e "$GREEN woods tempory/macro_${Saver}_${Nuclei}${paramater}_${constants}.mac $COLOR"
 
         TH[$i]=${!}
         THRun[$i]=$Saver

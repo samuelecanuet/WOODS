@@ -11,6 +11,9 @@ struct PrimaryInfo
   G4double HitAngle;
   G4ThreeVector HitPosition;
   G4String ParticleName;
+  G4int BackScatteringNumber;
+  vector<G4double> HitKineticEnergy;
+  G4int AnnihilationCounter;
 };
 
 //----------------------------------------------------------------------

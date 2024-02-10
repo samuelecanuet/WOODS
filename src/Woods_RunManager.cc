@@ -87,17 +87,40 @@ void Woods_RunManager::AnalyzeEvent(G4Event *event)
     Tree->Branch("Initial_Kinetic_Energy", &Initial_Kinetic_Energy, "Initial_Kinetic_Energy/D");
     Tree->Branch("Catcher_Central_Deposit_Energy", &Catcher_Central_Deposit_Energy, "Catcher_Central_Deposit_Energy/D");
     Tree->Branch("Catcher_Side_Deposit_Energy", &Catcher_Side_Deposit_Energy, "Catcher_Side_Deposit_Energy/D");
+
     Tree->Branch("PlasticScintillatorUp_Deposit_Energy", &PlasticScintillatorUp_Deposit_Energy, "PlasticScintillatorUp_Deposit_Energy/D");
     Tree->Branch("PlasticScintillatorUp_Hit_Position_x", &PlasticScintillatorUp_Hit_Position_x, "PlasticScintillatorUp_Hit_Position_x/D");
     Tree->Branch("PlasticScintillatorUp_Hit_Position_y", &PlasticScintillatorUp_Hit_Position_y, "PlasticScintillatorUp_Hit_Position_y/D");
     Tree->Branch("PlasticScintillatorUp_Hit_Position_z", &PlasticScintillatorUp_Hit_Position_z, "PlasticScintillatorUp_Hit_Position_z/D");
     Tree->Branch("PlasticScintillatorUp_Hit_Angle", &PlasticScintillatorUp_Hit_Angle, "PlasticScintillatorUp_Hit_Angle/D");
+    Tree->Branch("PlasticScintillatorUp_BackScatteringNumber", &PlasticScintillatorUp_BackScattering_Number, "PlasticScintillatorUp_BackScatteringNumber/I");
+    Tree->Branch("PlasticScintillatorUp_HitKineticEnergy", &PlasticScintillatorUp_Hit_KineticEnergy);
+    Tree->Branch("PlasticScintillatorUp_AnnihilationCounter", &PlasticScintillatorUp_AnnihilationCounter, "PlasticScintillatorUp_AnnihilationCounter/I");
+
     Tree->Branch("PlasticScintillatorLow_Deposit_Energy", &PlasticScintillatorLow_Deposit_Energy, "PlasticScintillatorLow_Deposit_Energy/D");
     Tree->Branch("PlasticScintillatorLow_Hit_Position_x", &PlasticScintillatorLow_Hit_Position_x, "PlasticScintillatorLow_Hit_Position_x/D");
     Tree->Branch("PlasticScintillatorLow_Hit_Position_y", &PlasticScintillatorLow_Hit_Position_y, "PlasticScintillatorLow_Hit_Position_y/D");
     Tree->Branch("PlasticScintillatorLow_Hit_Position_z", &PlasticScintillatorLow_Hit_Position_z, "PlasticScintillatorLow_Hit_Position_z/D");
     Tree->Branch("PlasticScintillatorLow_Hit_Angle", &PlasticScintillatorLow_Hit_Angle, "PlasticScintillatorLow_Hit_Angle/D");
+    Tree->Branch("PlasticScintillatorLow_BackScatteringNumber", &PlasticScintillatorLow_BackScattering_Number, "PlasticScintillatorLow_BackScatteringNumber/I");
+    Tree->Branch("PlasticScintillatorLow_HitKineticEnergy", &PlasticScintillatorLow_Hit_KineticEnergy);
+    Tree->Branch("PlasticScintillatorLow_AnnihilationCounter", &PlasticScintillatorLow_AnnihilationCounter, "PlasticScintillatorLow_AnnihilationCounter/I");
     ///////////////////////////////////////////////////////////////////
+
+    dirUp = f->mkdir("Upper_Detector");
+    EnergyDepositUp = new TH1D("EnergyDeposit_Up", "EnergyDeposit_Up", 10000, 0, 10000);
+    EnergyDepositUp_Beta = new TH1D("EnergyDeposit_Beta_Up", "EnergyDeposit_Beta_Up", 10000, 0, 10000);
+    EnergyDepositUp_Gamma = new TH1D("EnergyDeposit_Gamma_Up", "EnergyDeposit_Gamma_Up", 10000, 0, 10000);
+    BackScatteringMultiplicityUp = new TH1I("BackScatteringMultiplicity_Up", "BackScatteringMultiplicity_Up", 21, 0, 20);
+    AnnihilationMultiplicityUp = new TH1I("AnnihilationMultiplicity_Up", "AnnihilationMultiplicity_Up", 21, 0, 20);
+
+    dirLow = f->mkdir("Lower_Detector");
+    EnergyDepositLow = new TH1D("EnergyDeposit_Low", "EnergyDeposit_Low", 10000, 0, 10000);
+    EnergyDepositLow_Beta = new TH1D("EnergyDeposit_Beta_Low", "EnergyDeposit_Beta_Low", 10000, 0, 10000);
+    EnergyDepositLow_Gamma = new TH1D("EnergyDeposit_Gamma_Low", "EnergyDeposit_Gamma_Low", 10000, 0, 10000);
+    BackScatteringMultiplicityLow = new TH1I("BackScatteringMultiplicity_Low", "BackScatteringMultiplicity_Low", 21, 0, 20);
+    AnnihilationMultiplicityLow = new TH1I("AnnihilationMultiplicity_Low", "AnnihilationMultiplicity_Low", 21, 0, 20);
+
   }
   // call the base class function (whatever it is supposed to do)
   G4RunManager::AnalyzeEvent(event);
@@ -108,7 +131,7 @@ void Woods_RunManager::AnalyzeEvent(G4Event *event)
     count++;
     for (int part = 1; part <= event->GetNumberOfPrimaryVertex(); part++)
     {
-      
+            
       G4PrimaryParticle *Primary = event->GetPrimaryVertex(part - 1)->GetPrimary();
       G4ThreeVector Momentum = Primary->GetMomentumDirection();
 
@@ -121,6 +144,7 @@ void Woods_RunManager::AnalyzeEvent(G4Event *event)
       py = Momentum.y();
       pz = Momentum.z();
       Initial_Kinetic_Energy = Primary->GetKineticEnergy() / keV;
+
       Catcher_Central_Deposit_Energy = woods_sensor_CatcherMylar_central->GetDictionnary()[part].DepositEnergy + woods_sensor_CatcherAl1_central->GetDictionnary()[part].DepositEnergy + woods_sensor_CatcherAl2_central->GetDictionnary()[part].DepositEnergy;
       Catcher_Side_Deposit_Energy = woods_sensor_CatcherMylar_side->GetDictionnary()[part].DepositEnergy + woods_sensor_CatcherAl1_side->GetDictionnary()[part].DepositEnergy + woods_sensor_CatcherAl2_side->GetDictionnary()[part].DepositEnergy;
 
@@ -130,6 +154,9 @@ void Woods_RunManager::AnalyzeEvent(G4Event *event)
       PlasticScintillatorUp_Hit_Position_y = PlasticScintillatorUp.HitPosition.y();
       PlasticScintillatorUp_Hit_Position_z = PlasticScintillatorUp.HitPosition.z();
       PlasticScintillatorUp_Hit_Angle = PlasticScintillatorUp.HitAngle;
+      PlasticScintillatorUp_Hit_KineticEnergy = PlasticScintillatorUp.HitKineticEnergy;
+      PlasticScintillatorUp_BackScattering_Number = PlasticScintillatorUp.BackScatteringNumber;
+      PlasticScintillatorUp_AnnihilationCounter = PlasticScintillatorUp.AnnihilationCounter;
 
       PrimaryInfo PlasticScintillatorLow = woods_sensor_PlasticScintillatorLow->GetDictionnary()[part];
       PlasticScintillatorLow_Deposit_Energy = PlasticScintillatorLow.DepositEnergy;
@@ -137,10 +164,65 @@ void Woods_RunManager::AnalyzeEvent(G4Event *event)
       PlasticScintillatorLow_Hit_Position_y = PlasticScintillatorLow.HitPosition.y();
       PlasticScintillatorLow_Hit_Position_z = PlasticScintillatorLow.HitPosition.z();
       PlasticScintillatorLow_Hit_Angle = PlasticScintillatorLow.HitAngle;
+      PlasticScintillatorLow_Hit_KineticEnergy = PlasticScintillatorLow.HitKineticEnergy;
+      PlasticScintillatorLow_BackScattering_Number = PlasticScintillatorLow.BackScatteringNumber;
+      PlasticScintillatorLow_AnnihilationCounter = PlasticScintillatorLow.AnnihilationCounter;
+      
       Tree->Fill();
+
+
+      ////////////// Fill Histograms /////////////////////////////////
+
+      //////ENERGY SPECTRUMS
+      if (PlasticScintillatorUp.DepositEnergy > 0)
+      {
+        EnergyDepositUp->Fill(PlasticScintillatorUp.DepositEnergy);
+        if (Particle_PDG == -11)
+        {
+          EnergyDepositUp_Beta->Fill(PlasticScintillatorUp.DepositEnergy);
+        }
+        else if (Particle_PDG == 22)
+        {
+          EnergyDepositUp_Gamma->Fill(PlasticScintillatorUp.DepositEnergy);
+        }
+      }
+      if (PlasticScintillatorLow.DepositEnergy > 0)
+      {
+        EnergyDepositLow->Fill(PlasticScintillatorLow.DepositEnergy);
+        if (Particle_PDG == -11)
+        {
+          EnergyDepositLow_Beta->Fill(PlasticScintillatorLow.DepositEnergy);
+        }
+        else if (Particle_PDG == 22)
+        {
+          EnergyDepositLow_Gamma->Fill(PlasticScintillatorLow.DepositEnergy);
+        }
+      }
+
+      //////ANNILATION
+      if (Particle_PDG == -11)
+      {
+        if (PlasticScintillatorUp.AnnihilationCounter > 0)
+        {
+          AnnihilationMultiplicityUp->Fill(PlasticScintillatorUp.AnnihilationCounter);
+        }
+        if (PlasticScintillatorLow.AnnihilationCounter > 0)
+        {
+          AnnihilationMultiplicityLow->Fill(PlasticScintillatorLow.AnnihilationCounter);
+        }
+
+        //////BACKSCATTERING
+        if (PlasticScintillatorUp.BackScatteringNumber > 0)
+        {
+          BackScatteringMultiplicityUp->Fill(PlasticScintillatorUp.BackScatteringNumber);
+        }
+        if (PlasticScintillatorLow.BackScatteringNumber > 0)
+        {
+          BackScatteringMultiplicityLow->Fill(PlasticScintillatorLow.BackScatteringNumber);
+        }
+      }
     }
-    
-    
+
     ///// Reset all variables of detectors pour the next primary particle /////////////////
     Particle_PDG = 0;
     x = 0;
@@ -157,11 +239,18 @@ void Woods_RunManager::AnalyzeEvent(G4Event *event)
     PlasticScintillatorUp_Hit_Position_y = 0;
     PlasticScintillatorUp_Hit_Position_z = 0;
     PlasticScintillatorUp_Hit_Angle = 0;
+    PlasticScintillatorUp_Hit_KineticEnergy.clear();
+    PlasticScintillatorUp_BackScattering_Number = 0;
+    PlasticScintillatorUp_AnnihilationCounter = 0;
+
     PlasticScintillatorLow_Deposit_Energy = 0;
     PlasticScintillatorLow_Hit_Position_x = 0;
     PlasticScintillatorLow_Hit_Position_y = 0;
     PlasticScintillatorLow_Hit_Position_z = 0;
     PlasticScintillatorLow_Hit_Angle = 0;
+    PlasticScintillatorLow_Hit_KineticEnergy.clear();
+    PlasticScintillatorLow_BackScattering_Number = 0;
+    PlasticScintillatorLow_AnnihilationCounter = 0;
     ////////////////////////////////////////////////////////
   }
 
@@ -171,6 +260,19 @@ void Woods_RunManager::AnalyzeEvent(G4Event *event)
   if (count % divi == 0)
   {
     Tree->AutoSave("FlushBaskets");
+    dirUp->cd();
+    EnergyDepositUp->Write("", TObject::kOverwrite);
+    EnergyDepositUp_Beta->Write("", TObject::kOverwrite);
+    EnergyDepositUp_Gamma->Write("", TObject::kOverwrite);
+    BackScatteringMultiplicityUp->Write("", TObject::kOverwrite);
+    AnnihilationMultiplicityUp->Write("", TObject::kOverwrite);
+    dirLow->cd();
+    EnergyDepositLow->Write("", TObject::kOverwrite);
+    EnergyDepositLow_Beta->Write("", TObject::kOverwrite);
+    EnergyDepositLow_Gamma->Write("", TObject::kOverwrite);
+    BackScatteringMultiplicityLow->Write("", TObject::kOverwrite);
+    AnnihilationMultiplicityLow->Write("", TObject::kOverwrite);
+    f->cd();
   }
 
   ///// Reset all dictionnaries of detectors ///////////////////////

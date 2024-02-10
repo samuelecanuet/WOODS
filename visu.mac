@@ -21,10 +21,11 @@
 #---------------------------------------------------------------
 #   Simulation Parameters
 #---------------------------------------------------------------
-/Magnetic_Field 4 T
-/Detector_thickness 10 cm
-/Detector_radius 1. cm
-/Detector_distance 1.05 cm
+/Magnetic_Field 1 T
+/Detector_thickness 5.05 cm
+/Detector_radius 2.5 cm
+/Detector_distance 10.05 cm
+/Detector_material G4_PLASTIC_SC_VINYLTOLUENE #G4_PLASTIC_SC_VINYLTOLUENE #G4_SI
 
 #---------------------------------------------------------------
 #   Systematic Variables

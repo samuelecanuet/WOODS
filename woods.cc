@@ -18,7 +18,6 @@
 
 int main(int argc, char **argv)
 {
-  system("Logo/logo.ans");
   G4Random::setTheSeed(123456789);
 
   // get run time

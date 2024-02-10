@@ -33,6 +33,9 @@ void Woods_Sensor::Initialize(G4HCofThisEvent *)
   PrimaryInfo_init.HitPosition = G4ThreeVector(0, 0, 0);
   PrimaryInfo_init.HitAngle = 0;
   PrimaryInfo_init.ParticleName = "Unknown";
+  PrimaryInfo_init.BackScatteringNumber = 0;
+  PrimaryInfo_init.HitKineticEnergy.clear();
+  PrimaryInfo_init.AnnihilationCounter = 0;
 }
 
 // Function called when the track step occurs in the detector
@@ -40,7 +43,7 @@ G4bool Woods_Sensor::ProcessHits(G4Step *step, G4TouchableHistory *)
 {
   G4Track *track = step->GetTrack();
 
-  //Getting the primary track id
+  // Getting the primary track id
   if (track->GetParentID() == 0)
   {
     index = track->GetTrackID();
@@ -50,21 +53,46 @@ G4bool Woods_Sensor::ProcessHits(G4Step *step, G4TouchableHistory *)
     index = track->GetParentID();
   }
 
-  // Cheking if the primary or a secondary already enter in this volume
+
+  //////Init dic
   if (PrimaryDictionnary.find(index) == PrimaryDictionnary.end())
   {
-    // Initial info for this volume, particle event name to get the name of the initial particle, position hit and angle if the particle is primary 
+
     PrimaryDictionnary[index] = PrimaryInfo_init;
     PrimaryDictionnary[index].ParticleName = G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->GetPrimaryVertex(index - 1)->GetPrimary()->GetG4code()->GetParticleName();
     if (track->GetParentID() == 0)
     {
+
       PrimaryDictionnary[index].HitPosition = step->GetPreStepPoint()->GetPosition() / mm;
-      if (step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume()->GetName() == "PlasticScintillator") {PrimaryDictionnary[index].HitAngle = std::acos(G4ThreeVector(0, 0, 1) * track->GetMomentumDirection()) / deg;}
-      else { PrimaryDictionnary[index].HitAngle = std::acos(step->GetPreStepPoint()->GetTouchableHandle()->GetSolid()->SurfaceNormal(step->GetPreStepPoint()->GetPosition()) * track->GetMomentumDirection()) / deg;}
+
+      int copy_no = step->GetPreStepPoint()->GetPhysicalVolume()->GetCopyNo();
+      if (copy_no == 98 || copy_no == 99)
+      {
+        PrimaryDictionnary[index].HitAngle = std::acos(G4ThreeVector(0, 0, 1) * track->GetMomentumDirection()) / deg;
+      }
+    }
+  }
+
+  
+  ////Fill dic
+  if (track->GetParentID() == 0 && track->GetTrackStatus() == fAlive && (step->GetPreStepPoint()->GetPhysicalVolume()->GetCopyNo() == 98 || step->GetPreStepPoint()->GetPhysicalVolume()->GetCopyNo() == 99))
+  {
+    if (step->GetPreStepPoint()->GetPhysicalVolume()->GetCopyNo() == -1)
+    {
+      PrimaryDictionnary[index].HitKineticEnergy.push_back(step->GetPostStepPoint()->GetKineticEnergy() / keV);
+    }
+
+    if (step->GetPostStepPoint()->GetPhysicalVolume()->GetCopyNo() == -1 )
+    {
+      PrimaryDictionnary[index].BackScatteringNumber++;
+    }
+
+    if (step->GetPreStepPoint()->GetProcessDefinedStep()->GetProcessName() == "annil")
+    {
+      PrimaryDictionnary[index].AnnihilationCounter++;
     }
   }
 
   PrimaryDictionnary[index].DepositEnergy += step->GetTotalEnergyDeposit() / keV;
-
   return (true);
 }
